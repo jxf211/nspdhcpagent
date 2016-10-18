@@ -208,8 +208,14 @@ class DhcpAgent(manager.Manager):
 
     def enable_dhcp_helper(self, network_id):
         """Enable DHCP for a network that meets enabling criteria."""
-        network = self.safe_get_network_info(network_id)
-        if network:
+        #network = self.safe_get_network_info(network_id)
+        network = dhcp.NetModel(self.conf.use_namespaces, {"id": network_id,
+                                     			   "subnets": [{"network_id": network_id,
+									"ip_version": 4, "cidr":"10.10.40.0/24", "name":"testsubnet", 
+									"enable_dhcp": True}],
+                                     			   "ports": [{"network_id": network_id, "name":"private-port", "admin_state_up":True}],
+							   "admin_state_up":True})
+	if network:
             self.configure_dhcp_for_network(network)
 
     @utils.exception_logger()
