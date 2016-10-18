@@ -160,7 +160,7 @@ def _get_queue_arguments(conf):
 
 class RabbitMessage(dict):
     def __init__(self, raw_message):
-	LOG.debug("RabbitMessage. raw_message:%s", raw_message)
+	LOG.debug("RabbitMessage. raw_message:%s", raw_message.payload)
         super(RabbitMessage, self).__init__(
             rpc_common.deserialize_msg(raw_message.payload))
         self._raw_message = raw_message
@@ -218,7 +218,7 @@ class ConsumerBase(object):
         """
 
         try:
-	    LOG.debug("start callback %s", callback)
+	    LOG.debug("start callback %s", )
             callback(RabbitMessage(message))
 	    LOG.debug("callback(RabbitMessage(message)),%s", callback)
         except Exception:

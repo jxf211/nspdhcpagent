@@ -121,9 +121,11 @@ class RPCDispatcher(object):
     def _do_dispatch(self, endpoint, method, ctxt, args, executor_callback):
         ctxt = self.serializer.deserialize_context(ctxt)
         new_args = dict()
+	LOG.debug("args:%s",args)
         for argname, arg in six.iteritems(args):
             new_args[argname] = self.serializer.deserialize_entity(ctxt, arg)
         func = getattr(endpoint, method)
+	#new_args={"payload":{'network':{'id':'123123-2313-2313-131'}}}
 	LOG.debug("func :%s, ctxt:%s, new_args:%s",func,  ctxt, new_args)
         if executor_callback:
             result = executor_callback(func, ctxt, **new_args)
@@ -168,6 +170,7 @@ class RPCDispatcher(object):
         :type message: dict
         :raises: NoSuchMethod, UnsupportedVersion
         """
+	LOG.debug("_dispatch_message:%s", message)
         method = message.get('method')
         args = message.get('args', {})
         namespace = message.get('namespace')

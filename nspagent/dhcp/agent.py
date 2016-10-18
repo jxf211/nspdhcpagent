@@ -283,6 +283,7 @@ class DhcpAgent(manager.Manager):
     @utils.synchronized('dhcp-agent')
     def network_create_end(self, context, payload):
         """Handle the network.create.end notification event."""
+	LOG.debug("payload :%s", payload)
         network_id = payload['network']['id']
         self.enable_dhcp_helper(network_id)
 

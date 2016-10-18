@@ -48,23 +48,20 @@ class controller(object):
     def _send_dhcp_notification(self, context, data, methodname):
         #self._dhcp_agent_notifier.notify(context, data, methodname)
         task_exchange = Exchange('neutron', type='topic')   
-	create_result = {"oslo.message" :{
+	create_result = {"oslo.message" :{ 
 			  'message_id': '5c329c20-d435-444c-8fa2-e1b54592219c',
 			  'publisher_id': 'compute.host1',
 			  'method': 'network_create_end',
 			  '_context_user_id': None,
 		 	  '_context_project_id': None,
 			  '_context_is_admin': True, 
-			  "payload": {"subnet": 
-					{
-					"network_id": "d32019d3-bc6e-4319-9c1d-6722fc136a22",
-					"ip_version": 4,
-					"cidr": "10.0.0.1"
-					}  
+			  "args" : {"payload": {"network": 
+					{"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"}  
 				      }		
-			},
+				   }
+		         },
 			"oslo.version":'2.0',
-		}
+		      }
 	create_result["oslo.message" ] = json.dumps(create_result["oslo.message"])
 	connection = Connection('amqp://guest:guest@192.168.49.22:5672//')  
 	channel = connection.channel()  

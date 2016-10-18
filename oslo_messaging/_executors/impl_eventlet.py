@@ -49,7 +49,6 @@ def spawn_with(ctxt, pool):
         finally:
             if exc:
                 exit(None, None, None)
-    LOG.debug("ctxt.__enter__()******")
     callback = ctxt.__enter__()
     LOG.debug("callback :%s pool:%s", callback, pool)
     thread = pool.spawn(callback)
