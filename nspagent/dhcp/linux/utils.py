@@ -41,7 +41,7 @@ from common import utils
 
 
 LOG = logging.getLogger(__name__)
-#config.register_root_helper(cfg.CONF)
+config.register_root_helper(cfg.CONF)
 
 
 class RootwrapDaemonHelper(object):
@@ -115,7 +115,7 @@ def execute(cmd, process_input=None, addl_env=None,
             returncode = obj.returncode
             obj.stdin.close()
 
-        m = _("\nCommand: {cmd}\nExit code: {code}\nStdin: {stdin}\n"
+        m = ("\nCommand: {cmd}\nExit code: {code}\nStdin: {stdin}\n"
               "Stdout: {stdout}\nStderr: {stderr}").format(
                   cmd=cmd,
                   code=returncode,

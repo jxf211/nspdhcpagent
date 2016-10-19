@@ -113,12 +113,13 @@ class DhcpBase(object):
 
     def __init__(self, conf, network, process_monitor,
                  version=None, plugin=None):
+	LOG.debug(" __init__  DhcpBase  start plugin:%s", plugin)
         self.conf = conf
         self.network = network
         self.process_monitor = process_monitor
         self.device_manager = DeviceManager(self.conf, plugin)
         self.version = version
-
+	LOG.debug("__init__ DhcpBase  ok")
     @abc.abstractmethod
     def enable(self):
         """Enables DHCP for this network."""
@@ -173,7 +174,7 @@ class DhcpLocalProcess(DhcpBase):
         self.confs_dir = self.get_confs_dir(conf)
         self.network_conf_dir = os.path.join(self.confs_dir, network.id)
         utils.ensure_dir(self.network_conf_dir)
-
+	LOG.debug("__init__ DhcpLocalProcess ok")
     @staticmethod
     def get_confs_dir(conf):
         return os.path.abspath(os.path.normpath(conf.dhcp_confs))
@@ -883,15 +884,17 @@ class DeviceManager(object):
             LOG.error(('An interface driver must be specified'))
             raise SystemExit(1)
         try:
+	    LOG.debug("start __init__ DeviceManager")
             self.driver = importutils.import_object(
                 conf.interface_driver, conf)
         except Exception as e:
             LOG.error(("Error importing interface driver '%(driver)s': "
                           "%(inner)s"),
-                      {'driver': conf.interface_driver,
+                    {'driver': conf.interface_driver,
                        'inner': e})
             raise SystemExit(1)
-
+	    #raise
+	LOG.debug("ok __init__ DeviceManager")
     def get_interface_name(self, network, port):
         """Return interface(device) name for use by the DHCP process."""
         return self.driver.get_device_name(port)
@@ -949,7 +952,7 @@ class DeviceManager(object):
             if subnet.enable_dhcp:
                 dhcp_enabled_subnet_ids.append(subnet.id)
                 subnets[subnet.id] = subnet
-
+	'''	
         dhcp_port = None
         for port in network.ports:
             port_device_id = getattr(port, 'device_id', None)
@@ -979,7 +982,7 @@ class DeviceManager(object):
                     dhcp_port = port
                 # break since we found port that matches device_id
                 break
-
+	
         # check for a reserved DHCP port
         if dhcp_port is None:
             LOG.debug('DHCP port %(device_id)s on network %(network_id)s'
@@ -1007,8 +1010,89 @@ class DeviceManager(object):
                 tenant_id=network.tenant_id,
                 fixed_ips=[dict(subnet_id=s) for s in dhcp_enabled_subnet_ids])
             dhcp_port = self.plugin.create_dhcp_port({'port': port_dict})
+	'''
+	port = {
 
-        if not dhcp_port:
+		u'status': u'ACTIVE',
+
+		u'binding:host_id': u'jun2',
+
+		u'allowed_address_pairs': [],
+
+		u'extra_dhcp_opts': [],
+
+		u'device_owner': u'network:dhcp',
+
+		u'binding:profile': {},
+
+		u'fixed_ips':
+
+			    [{
+
+			    'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
+
+			    'subnet': {
+
+				       u'name': u'inter-sub',
+
+				       u'enable_dhcp': True,
+
+				       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
+
+				       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
+
+				       u'dns_nameservers': [],
+
+				       u'ipv6_ra_mode': None,
+
+				       u'allocation_pools': [{u'start': u'172.16.0.2', u'end': u'172.16.255.254'}],
+
+				       u'gateway_ip': u'172.16.0.1',
+
+				       u'shared': False,
+
+				       u'ip_version': 4,
+
+				       u'host_routes': [],
+
+				       u'cidr': u'172.16.0.0/16',
+
+				       u'ipv6_address_mode': None,
+
+				       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
+
+				       u'subnetpool_id': None
+
+				      },
+
+			    'ip_address': u'172.16.0.2'
+
+			    }],
+
+		u'id': u'712a2c63-e610-42c9-9ab3-4e8b6540d125',
+
+		u'security_groups': [],
+
+		u'device_id': u'dhcp2156d71d-f5c3-5752-9e43-4e8290a5696a-8165bc3d-400a-48a0-9186-bf59f7f94b05',
+
+		u'name': u'',
+
+		u'admin_state_up': True,
+
+		u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
+
+		u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
+
+		u'binding:vif_details': {u'port_filter': True},
+
+		u'binding:vnic_type': u'normal',
+
+		u'binding:vif_type': u'bridge',
+
+		u'mac_address': u'fa:16:3e:65:29:6d'
+		}
+	dhcp_port = DictModel(port)
+	if not dhcp_port:
             raise exceptions.Conflict()
 
         # Convert subnet_id to subnet dict
@@ -1032,6 +1116,7 @@ class DeviceManager(object):
                                          namespace=network.namespace):
             LOG.debug('Reusing existing device: %s.', interface_name)
         else:
+	    LOG.debug("Reusing not existing device:%s", interface_name)
             self.driver.plug(network.id,
                              port.id,
                              interface_name,

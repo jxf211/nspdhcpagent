@@ -56,7 +56,7 @@ class controller(object):
 		 	  '_context_project_id': None,
 			  '_context_is_admin': True, 
 			  "args" : {"payload": {"network": 
-					{"id": "d32019d3-bc6e-4319-9c1d-6722fc136a22"}  
+					{"id": "24783e1a-63fe-43d5-9989-e1515c24eecd"}  
 				      }		
 				   }
 		         },

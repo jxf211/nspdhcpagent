@@ -19,15 +19,15 @@ from oslo_utils import importutils
 import six
 
 interface_map = {
-    'vsctl': 'neutron.agent.ovsdb.impl_vsctl.OvsdbVsctl',
-    'native': 'neutron.agent.ovsdb.impl_idl.OvsdbIdl',
+    'vsctl': 'nspagent.ovsdb.impl_vsctl.OvsdbVsctl',
+    'native': 'nspagent.ovsdb.impl_idl.OvsdbIdl',
 }
 
 OPTS = [
     cfg.StrOpt('ovsdb_interface',
                choices=interface_map.keys(),
                default='vsctl',
-               help=_('The interface for interacting with the OVSDB')),
+               help=('The interface for interacting with the OVSDB')),
 ]
 cfg.CONF.register_opts(OPTS, 'OVS')
 

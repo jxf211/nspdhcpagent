@@ -20,9 +20,9 @@ from oslo_log import log as logging
 from oslo_serialization import jsonutils
 from oslo_utils import excutils
 
-from neutron.agent.common import utils
-from neutron.agent.ovsdb import api as ovsdb
-from neutron.i18n import _LE
+from nspagent.dhcpcommon import utils
+from nspagent.ovsdb import api as ovsdb
+#from neutron.i18n import _LE
 
 LOG = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class Transaction(ovsdb.Transaction):
         except Exception:
             with excutils.save_and_reraise_exception() as ctxt:
                 if self.log_errors:
-                    LOG.exception(_LE("Unable to execute %(cmd)s."),
+                    LOG.exception(("Unable to execute %(cmd)s."),
                                   {'cmd': full_args})
                 if not self.check_error:
                     ctxt.reraise = False
@@ -123,7 +123,7 @@ class DbCommand(BaseCommand):
             # This shouldn't happen, but if it does and we check_errors
             # log and raise.
             with excutils.save_and_reraise_exception():
-                LOG.exception(_LE("Could not parse: %s"), raw_result)
+                LOG.exception(("Could not parse: %s"), raw_result)
 
         headings = json['headings']
         data = json['data']

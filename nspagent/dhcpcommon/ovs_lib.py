@@ -24,13 +24,24 @@ from oslo_utils import excutils
 import retrying
 import six
 
-from neutron.agent.common import utils
-from neutron.agent.linux import ip_lib
-from neutron.agent.ovsdb import api as ovsdb
-from neutron.common import exceptions
-from neutron.i18n import _LE, _LI, _LW
-from neutron.plugins.common import constants
+from nspagent.dhcpcommon import utils
+from nspagent.dhcp.linux import ip_lib
+from nspagent.ovsdb import api as ovsdb
+from common import exceptions
+#from neutron.plugins.common import constants
+# Network Type constants
+TYPE_FLAT = 'flat'
+TYPE_GRE = 'gre'
+TYPE_LOCAL = 'local'
+TYPE_VXLAN = 'vxlan'
+TYPE_VLAN = 'vlan'
+TYPE_NONE = 'none'
+# Values for network_type
+VXLAN_UDP_PORT = 4789
 
+# Network Type MTU overhead
+GRE_ENCAP_OVERHEAD = 42
+VXLAN_ENCAP_OVERHEAD = 50
 # Default timeout for ovs-vsctl command
 DEFAULT_OVS_VSCTL_TIMEOUT = 10
 
@@ -44,7 +55,7 @@ FAILMODE_SECURE = 'secure'
 OPTS = [
     cfg.IntOpt('ovs_vsctl_timeout',
                default=DEFAULT_OVS_VSCTL_TIMEOUT,
-               help=_('Timeout in seconds for ovs-vsctl commands')),
+               help=('Timeout in seconds for ovs-vsctl commands')),
 ]
 cfg.CONF.register_opts(OPTS)
 
@@ -220,7 +231,7 @@ class OVSBridge(BaseOVS):
                               "in 1 second. Attempt: %s/10", i)
                     time.sleep(1)
                     continue
-                LOG.error(_LE("Unable to execute %(cmd)s. Exception: "
+                LOG.error(("Unable to execute %(cmd)s. Exception: "
                               "%(exception)s"),
                           {'cmd': full_args, 'exception': e})
                 break
@@ -242,7 +253,7 @@ class OVSBridge(BaseOVS):
         try:
             ofport = self._get_port_ofport(port_name)
         except retrying.RetryError as e:
-            LOG.exception(_LE("Timed out retrieving ofport on port %(pname)s. "
+            LOG.exception(("Timed out retrieving ofport on port %(pname)s. "
                               "Exception: %(exception)s"),
                           {'pname': port_name, 'exception': e})
         return ofport
@@ -277,15 +288,15 @@ class OVSBridge(BaseOVS):
         return DeferredOVSBridge(self, **kwargs)
 
     def add_tunnel_port(self, port_name, remote_ip, local_ip,
-                        tunnel_type=constants.TYPE_GRE,
-                        vxlan_udp_port=constants.VXLAN_UDP_PORT,
+                        tunnel_type=TYPE_GRE,
+                        vxlan_udp_port=VXLAN_UDP_PORT,
                         dont_fragment=True):
         attrs = [('type', tunnel_type)]
         # TODO(twilson) This is an OrderedDict solely to make a test happy
         options = collections.OrderedDict()
         vxlan_uses_custom_udp_port = (
-            tunnel_type == constants.TYPE_VXLAN and
-            vxlan_udp_port != constants.VXLAN_UDP_PORT
+            tunnel_type == TYPE_VXLAN and
+            vxlan_udp_port != VXLAN_UDP_PORT
         )
         if vxlan_uses_custom_udp_port:
             options['dst_port'] = vxlan_udp_port
@@ -316,7 +327,7 @@ class OVSBridge(BaseOVS):
             return utils.execute(args, run_as_root=True).strip()
         except Exception as e:
             with excutils.save_and_reraise_exception():
-                LOG.error(_LE("Unable to execute %(cmd)s. "
+                LOG.error(("Unable to execute %(cmd)s. "
                               "Exception: %(exception)s"),
                           {'cmd': args, 'exception': e})
 
@@ -370,10 +381,10 @@ class OVSBridge(BaseOVS):
         results = cmd.execute(check_error=True)
         for result in results:
             if result['ofport'] == UNASSIGNED_OFPORT:
-                LOG.warn(_LW("Found not yet ready openvswitch port: %s"),
+                LOG.warn(("Found not yet ready openvswitch port: %s"),
                          result['name'])
             elif result['ofport'] == INVALID_OFPORT:
-                LOG.warn(_LW("Found failed openvswitch port: %s"),
+                LOG.warn(("Found failed openvswitch port: %s"),
                          result['name'])
             elif 'attached-mac' in result['external_ids']:
                 port_id = self.portid_from_external_ids(result['external_ids'])
@@ -419,13 +430,13 @@ class OVSBridge(BaseOVS):
             if self.br_name != self.get_bridge_for_iface(port['name']):
                 continue
             if port['ofport'] in [UNASSIGNED_OFPORT, INVALID_OFPORT]:
-                LOG.warn(_LW("ofport: %(ofport)s for VIF: %(vif)s is not a"
+                LOG.warn(("ofport: %(ofport)s for VIF: %(vif)s is not a"
                              " positive integer"),
                          {'ofport': port['ofport'], 'vif': port_id})
                 continue
             mac = port['external_ids'].get('attached-mac')
             return VifPort(port['name'], port['ofport'], port_id, mac, self)
-        LOG.info(_LI("Port %(port_id)s not present in bridge %(br_name)s"),
+        LOG.info(("Port %(port_id)s not present in bridge %(br_name)s"),
                  {'port_id': port_id, 'br_name': self.br_name})
 
     def delete_ports(self, all_ports=False):
@@ -521,7 +532,7 @@ class DeferredOVSBridge(object):
         if exc_type is None:
             self.apply_flows()
         else:
-            LOG.exception(_LE("OVS flows could not be applied on bridge %s"),
+            LOG.exception(("OVS flows could not be applied on bridge %s"),
                           self.br.br_name)
 
 
@@ -542,7 +553,7 @@ def _build_flow_expr_str(flow_dict, cmd):
 
     if cmd != 'del':
         if "actions" not in flow_dict:
-            msg = _("Must specify one or more actions on flow addition"
+            msg = ("Must specify one or more actions on flow addition"
                     " or modification")
             raise exceptions.InvalidInput(error_message=msg)
         actions = "actions=%s" % flow_dict.pop('actions')

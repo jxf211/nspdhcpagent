@@ -17,7 +17,7 @@
 # module from agent/linux doesn't fail
 # TODO(atuvenie) remove this module after opening the liberty cycle
 
-from neutron.agent.common import ovs_lib
+from agent.common import ovs_lib
 
 INVALID_OFPORT = ovs_lib.INVALID_OFPORT
 BaseOVS = ovs_lib.BaseOVS

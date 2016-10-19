@@ -200,7 +200,7 @@ OPTS = [
 
 
 INTERFACE_DRIVER_OPTS = [
-    cfg.StrOpt('interface_driver',
+    cfg.StrOpt('interface_driver', default="nspagent.dhcp.linux.interface.OVSInterfaceDriver",
                help=("The driver used to manage the virtual interface.")),
 ]
 

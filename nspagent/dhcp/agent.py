@@ -128,10 +128,10 @@ class DhcpAgent(manager.Manager):
                 # allocation pool or a port is  deleted to free up an IP, this
                 # will automatically be retried on the notification
                 self.schedule_resync(e, network.id)
-            #if (isinstance(e, oslo_messaging.RemoteError)
-            #    and e.exc_type == 'NetworkNotFound'
-            #   or isinstance(e, exceptions.NetworkNotFound)):
-            #    LOG.debug("Network %s has been deleted.", network.id)
+            if (isinstance(e, oslo_messaging.RemoteError)
+                and e.exc_type == 'NetworkNotFound'
+                or isinstance(e, exceptions.NetworkNotFound)):
+                LOG.debug("Network %s has been deleted.", network.id)
             else:
                 LOG.exception(('Unable to %(action)s dhcp for %(net_id)s.'),
                               {'net_id': network.id, 'action': action})
@@ -210,11 +210,13 @@ class DhcpAgent(manager.Manager):
         """Enable DHCP for a network that meets enabling criteria."""
         #network = self.safe_get_network_info(network_id)
         network = dhcp.NetModel(self.conf.use_namespaces, {"id": network_id,
-                                     			   "subnets": [{"network_id": network_id,
+                                     			   "subnets": [{"id": "ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f",
 									"ip_version": 4, "cidr":"10.10.40.0/24", "name":"testsubnet", 
-									"enable_dhcp": True}],
+									"enable_dhcp": True,
+									"network_id" : network_id}],
                                      			   "ports": [{"network_id": network_id, "name":"private-port", "admin_state_up":True}],
-							   "admin_state_up":True})
+							   "admin_state_up":True,
+							   "tenant_id":"befa06e66e8047a1929a3912fff2c591"})
 	if network:
             self.configure_dhcp_for_network(network)
 
