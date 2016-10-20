@@ -29,7 +29,6 @@ import six
 from oslo_messaging._drivers import amqp as rpc_amqp
 from oslo_messaging._drivers import amqpdriver
 from oslo_messaging._drivers import common as rpc_common
-from oslo_messaging._i18n import _
 from oslo_messaging import exceptions
 
 qpid_codec = importutils.try_import("qpid.codec010")
@@ -99,7 +98,7 @@ JSON_CONTENT_TYPE = 'application/json; charset=utf8'
 
 
 def raise_invalid_topology_version(conf):
-    msg = (_("Invalid value for qpid_topology_version: %d") %
+    msg = (("Invalid value for qpid_topology_version: %d") %
            conf.qpid_topology_version)
     LOG.error(msg)
     raise Exception(msg)
@@ -217,7 +216,7 @@ class ConsumerBase(object):
             self._unpack_json_msg(message)
             self.callback(QpidMessage(self.session, message))
         except Exception:
-            LOG.exception(_("Failed to process message... skipping it."))
+            LOG.exception(("Failed to process message... skipping it."))
             self.session.acknowledge(message)
 
     def get_receiver(self):
@@ -566,19 +565,19 @@ class Connection(object):
                                 retry=retry,
                                 broker=broker)
                 if not loop_forever and attempt > retry:
-                    msg = _('Unable to connect to AMQP server on '
+                    msg = ('Unable to connect to AMQP server on '
                             '%(broker)s after %(retry)d '
                             'tries: %(e)s') % msg_dict
                     LOG.error(msg)
                     raise exceptions.MessageDeliveryFailure(msg)
                 else:
-                    msg = _("Unable to connect to AMQP server on %(broker)s: "
+                    msg = ("Unable to connect to AMQP server on %(broker)s: "
                             "%(e)s. Sleeping %(delay)s seconds") % msg_dict
                     LOG.error(msg)
                     time.sleep(delay)
                     delay = min(delay + 1, 5)
             else:
-                LOG.info(_('Connected to AMQP server on %s'), broker['host'])
+                LOG.info(('Connected to AMQP server on %s'), broker['host'])
                 break
 
         self.session = self.connection.session()
@@ -641,7 +640,7 @@ class Connection(object):
         """
         def _connect_error(exc):
             log_info = {'topic': topic, 'err_str': exc}
-            LOG.error(_("Failed to declare consumer for topic '%(topic)s': "
+            LOG.error(("Failed to declare consumer for topic '%(topic)s': "
                         "%(err_str)s"), log_info)
 
         def _declare_consumer():
@@ -664,7 +663,7 @@ class Connection(object):
 
         def _error_callback(exc):
             timer.check_return(_raise_timeout, exc)
-            LOG.exception(_('Failed to consume message from queue: %s'), exc)
+            LOG.exception(('Failed to consume message from queue: %s'), exc)
 
         def _consume():
             # NOTE(sileht):
@@ -689,7 +688,7 @@ class Connection(object):
             try:
                 self._lookup_consumer(nxt_receiver).consume()
             except Exception:
-                LOG.exception(_("Error processing message. "
+                LOG.exception(("Error processing message. "
                                 "Skipping it."))
 
         for iteration in itertools.count(0):
@@ -702,7 +701,7 @@ class Connection(object):
 
         def _connect_error(exc):
             log_info = {'topic': topic, 'err_str': exc}
-            LOG.exception(_("Failed to publish message to topic "
+            LOG.exception(("Failed to publish message to topic "
                           "'%(topic)s': %(err_str)s"), log_info)
 
         def _publisher_send():

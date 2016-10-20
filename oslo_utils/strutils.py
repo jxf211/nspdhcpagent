@@ -25,7 +25,6 @@ import unicodedata
 import six
 from six.moves import urllib
 
-from oslo_utils._i18n import _
 from oslo_utils import encodeutils
 
 
@@ -136,7 +135,7 @@ def bool_from_string(subject, strict=False, default=False):
     elif strict:
         acceptable = ', '.join(
             "'%s'" % s for s in sorted(TRUE_STRINGS + FALSE_STRINGS))
-        msg = _("Unrecognized value '%(val)s', acceptable values are:"
+        msg = ("Unrecognized value '%(val)s', acceptable values are:"
                 " %(acceptable)s") % {'val': subject,
                                       'acceptable': acceptable}
         raise ValueError(msg)
@@ -170,7 +169,7 @@ def string_to_bytes(text, unit_system='IEC', return_int=False):
     try:
         base, reg_ex = UNIT_SYSTEM_INFO[unit_system]
     except KeyError:
-        msg = _('Invalid unit system: "%s"') % unit_system
+        msg = ('Invalid unit system: "%s"') % unit_system
         raise ValueError(msg)
     match = reg_ex.match(text)
     if match:
@@ -179,7 +178,7 @@ def string_to_bytes(text, unit_system='IEC', return_int=False):
         if match.group(3) in ['b', 'bit']:
             magnitude /= 8
     else:
-        msg = _('Invalid string format: %s') % text
+        msg = ('Invalid string format: %s') % text
         raise ValueError(msg)
     if not unit_prefix:
         res = magnitude
@@ -404,18 +403,18 @@ def check_string_length(value, name=None, min_length=0, max_length=None):
         name = value
 
     if not isinstance(value, six.string_types):
-        msg = _("%s is not a string or unicode") % name
+        msg = ("%s is not a string or unicode") % name
         raise TypeError(msg)
 
     length = len(value)
     if length < min_length:
-        msg = _("%(name)s has %(length)s characters, less than "
+        msg = ("%(name)s has %(length)s characters, less than "
                 "%(min_length)s.") % {'name': name, 'length': length,
                                       'min_length': min_length}
         raise ValueError(msg)
 
     if max_length and length > max_length:
-        msg = _("%(name)s has %(length)s characters, more than "
+        msg = ("%(name)s has %(length)s characters, more than "
                 "%(max_length)s.") % {'name': name, 'length': length,
                                       'max_length': max_length}
         raise ValueError(msg)
@@ -446,7 +445,7 @@ def split_path(path, minsegs=1, maxsegs=None, rest_with_last=False):
     if not maxsegs:
         maxsegs = minsegs
     if minsegs > maxsegs:
-        raise ValueError(_('minsegs > maxsegs: %(min)d > %(max)d)') %
+        raise ValueError(('minsegs > maxsegs: %(min)d > %(max)d)') %
                          {'min': minsegs, 'max': maxsegs})
     if rest_with_last:
         segs = path.split('/', maxsegs)
@@ -455,7 +454,7 @@ def split_path(path, minsegs=1, maxsegs=None, rest_with_last=False):
         count = len(segs)
         if (segs[0] or count < minsegs or count > maxsegs or
                 '' in segs[1:minsegs]):
-            raise ValueError(_('Invalid path: %s') % urllib.parse.quote(path))
+            raise ValueError(('Invalid path: %s') % urllib.parse.quote(path))
     else:
         minsegs += 1
         maxsegs += 1
@@ -464,7 +463,7 @@ def split_path(path, minsegs=1, maxsegs=None, rest_with_last=False):
         if (segs[0] or count < minsegs or count > maxsegs + 1 or
                 '' in segs[1:minsegs] or
                 (count == maxsegs + 1 and segs[maxsegs])):
-            raise ValueError(_('Invalid path: %s') % urllib.parse.quote(path))
+            raise ValueError(('Invalid path: %s') % urllib.parse.quote(path))
     segs = segs[1:maxsegs]
     segs.extend([None] * (maxsegs - 1 - len(segs)))
     return segs

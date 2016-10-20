@@ -31,7 +31,6 @@ from oslo_config import cfg
 import retrying
 import six
 
-from oslo_concurrency._i18n import _, _LE, _LI
 from oslo_concurrency.openstack.common import fileutils
 
 
@@ -122,7 +121,7 @@ def _lock_retry(delay, filename,
         # catch and inspect all execeptions (and there types...)
         if isinstance(e, IOError) and e.errno in (errno.EACCES, errno.EAGAIN):
             return True
-        raise threading.ThreadError(_("Unable to acquire lock on"
+        raise threading.ThreadError(("Unable to acquire lock on"
                                       " `%(filename)s` due to"
                                       " %(exception)s") %
                                     {
@@ -192,7 +191,7 @@ class _FileLock(object):
         basedir = os.path.dirname(self.fname)
         if not os.path.exists(basedir):
             fileutils.ensure_tree(basedir)
-            LOG.info(_LI('Created lock path: %s'), basedir)
+            LOG.info(('Created lock path: %s'), basedir)
 
         # Open in append mode so we don't overwrite any potential contents of
         # the target file.  This eliminates the possibility of an attacker
@@ -219,7 +218,7 @@ class _FileLock(object):
 
     def release(self):
         if self.acquire_time is None:
-            raise threading.ThreadError(_("Unable to release an unacquired"
+            raise threading.ThreadError(("Unable to release an unacquired"
                                           " lock"))
         try:
             release_time = time.time()
@@ -228,13 +227,13 @@ class _FileLock(object):
             self.unlock()
             self.acquire_time = None
         except IOError:
-            LOG.exception(_LE("Could not unlock the acquired lock `%s`"),
+            LOG.exception(("Could not unlock the acquired lock `%s`"),
                           self.fname)
         else:
             try:
                 self.lockfile.close()
             except IOError:
-                LOG.exception(_LE("Could not close the acquired file handle"
+                LOG.exception(("Could not close the acquired file handle"
                                   " `%s`"), self.fname)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -343,7 +342,7 @@ def remove_external_lock_file(name, lock_file_prefix=None, lock_path=None,
         try:
             os.remove(lock_file_path)
         except OSError:
-            LOG.info(_LI('Failed to remove file %(file)s'),
+            LOG.info(('Failed to remove file %(file)s'),
                      {'file': lock_file_path})
 
 
@@ -682,6 +681,6 @@ def main():
 
 
 if __name__ == '__main__':
-    raise NotImplementedError(_('Calling lockutils directly is no longer '
+    raise NotImplementedError(('Calling lockutils directly is no longer '
                                 'supported.  Please use the '
                                 'lockutils-wrapper console script instead.'))

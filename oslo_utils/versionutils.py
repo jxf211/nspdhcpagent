@@ -22,7 +22,6 @@ Helpers for comparing version strings.
 import pkg_resources
 import six
 
-from oslo_utils._i18n import _
 
 
 def is_compatible(requested_version, current_version, same_major=True):
@@ -61,7 +60,7 @@ def convert_version_to_int(version):
         if isinstance(version, tuple):
             return six.moves.reduce(lambda x, y: (x * 1000) + y, version)
     except Exception as ex:
-        msg = _("Version %s is invalid.") % version
+        msg = ("Version %s is invalid.") % version
         six.raise_from(ValueError(msg), ex)
 
 

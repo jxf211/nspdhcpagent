@@ -18,7 +18,7 @@ import os
 from oslo_log import log as logging
 
 from nspagent.dhcpcommon import config
-from nspagent.dhcp.l3 import namespaces
+#from nspagent.dhcp.l3 import namespaces
 from nspagent.dhcp.linux import external_process
 from nspagent.dhcp.linux import utils
 from callbacks import events
@@ -27,7 +27,7 @@ from callbacks import resources
 from common import exceptions
 
 LOG = logging.getLogger(__name__)
-
+INTERNAL_DEV_PREFIX = 'qr-'
 # Access with redirection to metadata proxy iptables mark mask
 METADATA_ACCESS_MARK_MASK = '0xffffffff'
 METADATA_SERVICE_NAME = 'metadata-proxy'
@@ -63,7 +63,7 @@ class MetadataDriver(object):
                  '-i %(interface_name)s '
                  '-p tcp -m tcp --dport 80 -j REDIRECT '
                  '--to-port %(port)s' %
-                 {'interface_name': namespaces.INTERNAL_DEV_PREFIX + '+',
+                 {'interface_name': INTERNAL_DEV_PREFIX + '+',
                   'port': port})]
 
     @classmethod

@@ -30,7 +30,6 @@ from oslo_utils import importutils
 from oslo_utils import strutils
 import six
 
-from oslo_concurrency._i18n import _
 
 
 # NOTE(bnemec): eventlet doesn't monkey patch subprocess, so we need to
@@ -67,10 +66,10 @@ class ProcessExecutionError(Exception):
         self.description = description
 
         if description is None:
-            description = _("Unexpected error while running command.")
+            description = ("Unexpected error while running command.")
         if exit_code is None:
             exit_code = '-'
-        message = _('%(description)s\n'
+        message = ('%(description)s\n'
                     'Command: %(cmd)s\n'
                     'Exit code: %(exit_code)s\n'
                     'Stdout: %(stdout)r\n'
@@ -195,16 +194,16 @@ def execute(*cmd, **kwargs):
         check_exit_code = [check_exit_code]
 
     if kwargs:
-        raise UnknownArgumentError(_('Got unknown keyword args: %r') % kwargs)
+        raise UnknownArgumentError(('Got unknown keyword args: %r') % kwargs)
 
     if log_errors not in [None, LOG_ALL_ERRORS, LOG_FINAL_ERROR]:
-        raise InvalidArgumentError(_('Got invalid arg log_errors: %r') %
+        raise InvalidArgumentError(('Got invalid arg log_errors: %r') %
                                    log_errors)
 
     if run_as_root and hasattr(os, 'geteuid') and os.geteuid() != 0:
         if not root_helper:
             raise NoRootWrapSpecified(
-                message=_('Command requested root, but did not '
+                message=('Command requested root, but did not '
                           'specify a root helper.'))
         if shell:
             # root helper has to be injected into the command string
@@ -220,7 +219,7 @@ def execute(*cmd, **kwargs):
         attempts -= 1
         try:
             start_time = time.time()
-            LOG.log(loglevel, _('Running cmd (subprocess): %s'), sanitized_cmd)
+            LOG.log(loglevel, ('Running cmd (subprocess): %s'), sanitized_cmd)
             _PIPE = subprocess.PIPE  # pylint: disable=E1101
 
             if os.name == 'nt':
@@ -272,7 +271,7 @@ def execute(*cmd, **kwargs):
             if log_errors == LOG_ALL_ERRORS or (
                     log_errors == LOG_FINAL_ERROR and not attempts):
                 if isinstance(err, ProcessExecutionError):
-                    format = _('%(desc)r\ncommand: %(cmd)r\n'
+                    format = ('%(desc)r\ncommand: %(cmd)r\n'
                                'exit code: %(code)r\nstdout: %(stdout)r\n'
                                'stderr: %(stderr)r')
                     LOG.log(loglevel, format, {"desc": err.description,
@@ -281,17 +280,17 @@ def execute(*cmd, **kwargs):
                                                "stdout": err.stdout,
                                                "stderr": err.stderr})
                 else:
-                    format = _('Got an OSError\ncommand: %(cmd)r\n'
+                    format = ('Got an OSError\ncommand: %(cmd)r\n'
                                'errno: %(errno)r')
                     LOG.log(loglevel, format, {"cmd": sanitized_cmd,
                                                "errno": err.errno})
 
             if not attempts:
-                LOG.log(loglevel, _('%r failed. Not Retrying.'),
+                LOG.log(loglevel, ('%r failed. Not Retrying.'),
                         sanitized_cmd)
                 raise
             else:
-                LOG.log(loglevel, _('%r failed. Retrying.'),
+                LOG.log(loglevel, ('%r failed. Retrying.'),
                         sanitized_cmd)
                 if delay_on_retry:
                     time.sleep(random.randint(20, 200) / 100.0)
@@ -338,11 +337,11 @@ def ssh_execute(ssh, cmd, process_input=None,
     sanitized_cmd = strutils.mask_password(cmd)
     LOG.debug('Running cmd (SSH): %s', sanitized_cmd)
     if addl_env:
-        raise InvalidArgumentError(_('Environment not supported over SSH'))
+        raise InvalidArgumentError(('Environment not supported over SSH'))
 
     if process_input:
         # This is (probably) fixable if we need it...
-        raise InvalidArgumentError(_('process_input not supported over SSH'))
+        raise InvalidArgumentError(('process_input not supported over SSH'))
 
     stdin_stream, stdout_stream, stderr_stream = ssh.exec_command(cmd)
     channel = stdout_stream.channel

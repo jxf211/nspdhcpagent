@@ -16,7 +16,6 @@
 import logging
 
 from oslo_messaging._executors import base
-from oslo_messaging._i18n import _
 
 LOG = logging.getLogger(__name__)
 
@@ -47,7 +46,7 @@ class BlockingExecutor(base.ExecutorBase):
                     with self.dispatcher(incoming) as callback:
                         callback()
             except Exception:
-                LOG.exception(_("Unexpected exception occurred."))
+                LOG.exception(("Unexpected exception occurred."))
 
     def stop(self):
         self._running = False

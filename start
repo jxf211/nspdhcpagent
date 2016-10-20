@@ -1,1 +1,1 @@
-./nsp-dhcp-agent --config-dir /root/dhcpagent/etc/ --config-file neutron.conf --config-file etc/dhcp_agent.ini
+./nsp-dhcp-agent --config-dir /root/jxf/nspdhcpagent/etc/ --config-file ./etc/neutron.conf --config-file ./etc/dhcp_agent.ini

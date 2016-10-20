@@ -25,8 +25,6 @@ import oslo_messaging
 from oslo_messaging._drivers import amqp as rpc_amqp
 from oslo_messaging._drivers import base
 from oslo_messaging._drivers import common as rpc_common
-from oslo_messaging._i18n import _
-from oslo_messaging._i18n import _LI
 
 LOG = logging.getLogger(__name__)
 
@@ -150,7 +148,7 @@ class ReplyWaiters(object):
     def put(self, msg_id, message_data):
         queue = self._queues.get(msg_id)
         if not queue:
-            LOG.info(_LI('No calling threads waiting for msg_id : %s'), msg_id)
+            LOG.info(('No calling threads waiting for msg_id : %s'), msg_id)
             LOG.debug(' queues: %(queues)s, message: %(message)s',
                       {'queues': len(self._queues), 'message': message_data})
         else:
@@ -212,7 +210,7 @@ class ReplyWaiter(object):
     @staticmethod
     def _raise_timeout_exception(msg_id):
         raise oslo_messaging.MessagingTimeout(
-            _('Timed out waiting for a reply to message ID %s.') % msg_id)
+            ('Timed out waiting for a reply to message ID %s.') % msg_id)
 
     def _process_reply(self, data):
         result = None

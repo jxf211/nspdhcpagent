@@ -413,7 +413,6 @@ from debtcollector import removals
 import six
 from six import moves
 
-from oslo_config._i18n import _LI, _LW
 from oslo_config import iniparser
 from oslo_config import types
 
@@ -875,7 +874,7 @@ class Opt(object):
         if self.deprecated_for_removal and not self._logged_deprecation:
             self._logged_deprecation = True
             pretty_group = group_name or 'DEFAULT'
-            LOG.warning(_LW('Option "%(option)s" from group "%(group)s" is '
+            LOG.warning(('Option "%(option)s" from group "%(group)s" is '
                             'deprecated for removal.  Its value may be '
                             'silently ignored in the future.'),
                         {'option': self.dest, 'group': pretty_group})
@@ -1733,7 +1732,7 @@ class MultiConfigParser(object):
     _Namespace.
     """
 
-    _deprecated_opt_message = _LW('Option "%(dep_option)s" from group '
+    _deprecated_opt_message = ('Option "%(dep_option)s" from group '
                                   '"%(dep_group)s" is deprecated. Use option '
                                   '"%(option)s" from group "%(group)s".')
 
@@ -1844,7 +1843,7 @@ class _Namespace(argparse.Namespace):
     or convert a config file value at this point.
     """
 
-    _deprecated_opt_message = _LW('Option "%(dep_option)s" from group '
+    _deprecated_opt_message = ('Option "%(dep_option)s" from group '
                                   '"%(dep_group)s" is deprecated. Use option '
                                   '"%(option)s" from group "%(group)s".')
 
@@ -2918,11 +2917,11 @@ class ConfigOpts(collections.Mapping):
         try:
             namespace = self._reload_config_files()
         except SystemExit as exc:
-            LOG.warning(_LW("Caught SystemExit while reloading configure "
+            LOG.warning(("Caught SystemExit while reloading configure "
                             "files with exit code: %d"), exc.code)
             return False
         except Error as err:
-            LOG.warning(_LW("Caught Error while reloading configure files: "
+            LOG.warning(("Caught Error while reloading configure files: "
                             " %s"), err)
             return False
         else:
@@ -2964,7 +2963,7 @@ class ConfigOpts(collections.Mapping):
         sorted_fresh = sorted(fresh.items(), key=key_fn)
         for (groupname, optname), (old, new) in sorted_fresh:
             groupname = groupname if groupname else 'DEFAULT'
-            LOG.info(_LI("Option %(group)s.%(option)s changed from "
+            LOG.info(("Option %(group)s.%(option)s changed from "
                          "[%(old_val)s] to [%(new_val)s]"),
                      {'group': groupname,
                       'option': optname,
@@ -2994,7 +2993,7 @@ class ConfigOpts(collections.Mapping):
             except KeyError:
                 new = None
             if old != new:
-                LOG.warning(_LW("Ignoring change to immutable option "
+                LOG.warning(("Ignoring change to immutable option "
                                 "%(group)s.%(option)s"),
                             {"group": groupname, "option": opt.name})
 

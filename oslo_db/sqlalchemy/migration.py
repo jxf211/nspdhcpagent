@@ -46,7 +46,6 @@ from migrate.versioning import api as versioning_api
 from migrate.versioning.repository import Repository
 import sqlalchemy
 
-from oslo_db._i18n import _
 from oslo_db import exception
 
 
@@ -69,7 +68,7 @@ def db_sync(engine, abs_path, version=None, init_version=0, sanity_check=True):
             version = int(version)
         except ValueError:
             raise exception.DbMigrationError(
-                message=_("version should be an integer"))
+                message=("version should be an integer"))
 
     current_version = db_version(engine, abs_path, init_version)
     repository = _find_migrate_repo(abs_path)
@@ -105,7 +104,7 @@ def _db_schema_sanity_check(engine):
                        res[0].lower() not in EXCLUDED_TABLES]
 
         if len(table_names) > 0:
-            raise ValueError(_('Tables "%s" have non utf8 collation, '
+            raise ValueError(('Tables "%s" have non utf8 collation, '
                                'please make sure all tables are CHARSET=utf8'
                                ) % ','.join(table_names))
 
@@ -129,7 +128,7 @@ def db_version(engine, abs_path, init_version):
             return versioning_api.db_version(engine, repository)
         else:
             raise exception.DbMigrationError(
-                message=_(
+                message=(
                     "The database is not under version control, but has "
                     "tables. Please stamp the current version of the schema "
                     "manually."))

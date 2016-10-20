@@ -28,7 +28,6 @@ Helper methods to deal with images.
 import json
 import re
 
-from oslo_utils._i18n import _
 from oslo_utils import strutils
 
 
@@ -98,7 +97,7 @@ class QemuImgInfo(object):
         # Replace it with the byte amount
         real_size = self.SIZE_RE.search(details)
         if not real_size:
-            raise ValueError(_('Invalid input value "%s".') % details)
+            raise ValueError(('Invalid input value "%s".') % details)
         magnitude = real_size.group(1)
         unit_of_measure = real_size.group(2)
         bytes_info = real_size.group(3)
@@ -127,7 +126,7 @@ class QemuImgInfo(object):
         elif root_cmd == 'snapshot_list':
             # Next line should be a header, starting with 'ID'
             if not lines_after or not lines_after.pop(0).startswith("ID"):
-                msg = _("Snapshot list encountered but no header found!")
+                msg = ("Snapshot list encountered but no header found!")
                 raise ValueError(msg)
             real_details = []
             # This is the sprintf pattern we will try to match

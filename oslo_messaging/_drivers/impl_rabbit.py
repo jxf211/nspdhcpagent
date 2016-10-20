@@ -35,10 +35,6 @@ from six.moves.urllib import parse
 from oslo_messaging._drivers import amqp as rpc_amqp
 from oslo_messaging._drivers import amqpdriver
 from oslo_messaging._drivers import common as rpc_common
-from oslo_messaging._i18n import _
-from oslo_messaging._i18n import _LE
-from oslo_messaging._i18n import _LI
-from oslo_messaging._i18n import _LW
 from oslo_messaging import exceptions
 
 
@@ -208,7 +204,7 @@ class ConsumerBase(object):
             # 'channel_errors' of the kombu connection object that
             # has created the channel.
             # See https://bugs.launchpad.net/neutron/+bug/1318721 for details.
-            LOG.error(_("Declaring queue failed with (%s), retrying"), e)
+            LOG.error(("Declaring queue failed with (%s), retrying"), e)
             self.queue.declare()
 
     def _callback_handler(self, message, callback):
@@ -222,7 +218,7 @@ class ConsumerBase(object):
             callback(RabbitMessage(message))
 	    LOG.debug("callback(RabbitMessage(message)),%s", callback)
         except Exception:
-            LOG.exception(_("Failed to process message"
+            LOG.exception(("Failed to process message"
                             " ... skipping it."))
             message.ack()
 
@@ -477,7 +473,7 @@ class RetryOnMissingExchangePublisher(Publisher):
                 # the 404 kombu ChannelError and retry until the exchange
                 # appears
                 if exc.code == 404 and timer.check_return() > 0:
-                    LOG.info(_LI("The exchange %(exchange)s to send to "
+                    LOG.info(("The exchange %(exchange)s to send to "
                                  "%(routing_key)s doesn't exist yet, "
                                  "retrying...") % {
                                      'exchange': self.exchange,
@@ -628,7 +624,7 @@ class Connection(object):
             self._url = 'memory://%s/' % virtual_host
         elif url.hosts:
             if url.transport.startswith('kombu+'):
-                LOG.warn(_LW('Selecting the kombu transport through the '
+                LOG.warn(('Selecting the kombu transport through the '
                              'transport url (%s) is a experimental feature '
                              'and this is not yet supported.') % url.transport)
             for host in url.hosts:
@@ -679,7 +675,7 @@ class Connection(object):
             heartbeat=self.driver_conf.heartbeat_timeout_threshold,
             transport_options={'confirm_publish': True})
 
-        LOG.info(_LI('Connecting to AMQP server on %(hostname)s:%(port)d'),
+        LOG.info(('Connecting to AMQP server on %(hostname)s:%(port)d'),
                  self.connection.info())
 
         # NOTE(sileht): kombu recommend to run heartbeat_check every
@@ -705,7 +701,7 @@ class Connection(object):
         if purpose == rpc_amqp.PURPOSE_SEND:
             self._heartbeat_start()
 
-        LOG.info(_LI('Connected to AMQP server on %(hostname)s:%(port)d'),
+        LOG.info(('Connected to AMQP server on %(hostname)s:%(port)d'),
                  self.connection.info())
 
         # NOTE(sileht): value choosen according the best practice from kombu
@@ -747,7 +743,7 @@ class Connection(object):
         try:
             return cls._SSL_PROTOCOLS[key]
         except KeyError:
-            raise RuntimeError(_("Invalid SSL version : %s") % version)
+            raise RuntimeError(("Invalid SSL version : %s") % version)
 
     def _parse_url_hostname(self, hostname):
         """Handles hostname returned from urlparse and checks whether it's
@@ -807,7 +803,7 @@ class Connection(object):
             retry = None
 
         def on_error(exc, interval):
-            LOG.debug(_("Received recoverable error from kombu:"),
+            LOG.debug(("Received recoverable error from kombu:"),
                       exc_info=True)
 
             recoverable_error_callback and recoverable_error_callback(exc)
@@ -820,11 +816,11 @@ class Connection(object):
             info.update(self.connection.info())
 
             if 'Socket closed' in six.text_type(exc):
-                LOG.error(_LE('AMQP server %(hostname)s:%(port)d closed'
+                LOG.error(('AMQP server %(hostname)s:%(port)d closed'
                               ' the connection. Check login credentials:'
                               ' %(err_str)s'), info)
             else:
-                LOG.error(_LE('AMQP server on %(hostname)s:%(port)d is '
+                LOG.error(('AMQP server on %(hostname)s:%(port)d is '
                               'unreachable: %(err_str)s. Trying again in '
                               '%(sleep_time)d seconds.'), info)
 
@@ -850,7 +846,7 @@ class Connection(object):
             for consumer in self.consumers:
                 consumer.reconnect(new_channel)
 
-            LOG.info(_LI('Reconnected to AMQP server on '
+            LOG.info(('Reconnected to AMQP server on '
                          '%(hostname)s:%(port)d'),
                      {'hostname': self.connection.hostname,
                       'port': self.connection.port})
@@ -875,13 +871,13 @@ class Connection(object):
             self._set_current_channel(channel)
             return ret
         except recoverable_errors as exc:
-            LOG.debug(_("Received recoverable error from kombu:"),
+            LOG.debug(("Received recoverable error from kombu:"),
                       exc_info=True)
             error_callback and error_callback(exc)
             self._set_current_channel(None)
             # NOTE(sileht): number of retry exceeded and the connection
             # is still broken
-            msg = _('Unable to connect to AMQP server on '
+            msg = ('Unable to connect to AMQP server on '
                     '%(hostname)s:%(port)d after %(retry)d '
                     'tries: %(err_str)s') % {
                         'hostname': self.connection.hostname,
@@ -932,7 +928,7 @@ class Connection(object):
         if self.connection.supports_heartbeats:
             return True
         elif not self._heartbeat_support_log_emitted:
-            LOG.warn(_LW("Heartbeat support requested but it is not supported "
+            LOG.warn(("Heartbeat support requested but it is not supported "
                          "by the kombu driver or the broker"))
             self._heartbeat_support_log_emitted = True
         return False
@@ -999,11 +995,11 @@ class Connection(object):
                         except socket.timeout:
                             pass
                     except recoverable_errors as exc:
-                        LOG.info(_LI("A recoverable connection/channel error "
+                        LOG.info(("A recoverable connection/channel error "
                                      "occurred, trying to reconnect: %s"), exc)
                         self.ensure_connection()
                 except Exception:
-                    LOG.warning(_LW("Unexpected error during heartbeart "
+                    LOG.warning(("Unexpected error during heartbeart "
                                     "thread processing, retrying..."))
                     LOG.debug('Exception', exc_info=True)
 
@@ -1018,7 +1014,7 @@ class Connection(object):
 
         def _connect_error(exc):
             log_info = {'topic': topic, 'err_str': exc}
-            LOG.error(_("Failed to declare consumer for topic '%(topic)s': "
+            LOG.error(("Failed to declare consumer for topic '%(topic)s': "
                       "%(err_str)s"), log_info)
 
         def _declare_consumer():
@@ -1050,7 +1046,7 @@ class Connection(object):
 
         def _error_callback(exc):
             _recoverable_error_callback(exc)
-            LOG.error(_('Failed to consume message from queue: %s'),
+            LOG.error(('Failed to consume message from queue: %s'),
                       exc)
 
         def _consume():
@@ -1091,7 +1087,7 @@ class Connection(object):
 
         def _error_callback(exc):
             log_info = {'topic': publisher.exchange_name, 'err_str': exc}
-            LOG.error(_("Failed to publish message to topic "
+            LOG.error(("Failed to publish message to topic "
                         "'%(topic)s': %(err_str)s"), log_info)
             LOG.debug('Exception', exc_info=exc)
 

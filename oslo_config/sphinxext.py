@@ -25,7 +25,7 @@ from sphinx.util.nodes import nested_parse_with_titles
 
 from oslo_config import cfg
 from oslo_config import generator
-import oslo_i18n
+#import oslo_i18n
 
 import six
 
@@ -448,6 +448,6 @@ def setup(app):
     # from another module such as through the autodoc features, or
     # even through the plugin scanner, will turn lazy evaluation back
     # on.
-    oslo_i18n.enable_lazy(False)
+    #oslo_i18n.enable_lazy(False)
     app.add_directive('show-options', ShowOptionsDirective)
     app.add_domain(ConfigDomain)

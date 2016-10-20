@@ -36,7 +36,6 @@ from stevedore import driver
 from oslo_messaging._drivers import base
 from oslo_messaging._drivers import common as rpc_common
 from oslo_messaging._executors import base as executor_base  # FIXME(markmc)
-from oslo_messaging._i18n import _, _LE, _LW
 
 
 zmq = importutils.try_import('eventlet.green.zmq')
@@ -101,7 +100,7 @@ def _serialize(data):
         return jsonutils.dumps(data, ensure_ascii=True)
     except TypeError:
         with excutils.save_and_reraise_exception():
-            LOG.error(_("JSON serialization failed."))
+            LOG.error(("JSON serialization failed."))
 
 
 def _deserialize(data):
@@ -165,7 +164,7 @@ class ZmqSocket(object):
             else:
                 self.sock.connect(addr)
         except Exception:
-            raise RPCException(_("Could not open socket."))
+            raise RPCException(("Could not open socket."))
 
     def socket_s(self):
         """Get socket type as string."""
@@ -224,12 +223,12 @@ class ZmqSocket(object):
 
     def recv(self, **kwargs):
         if not self.can_recv:
-            raise RPCException(_("You cannot recv on this socket."))
+            raise RPCException(("You cannot recv on this socket."))
         return self.sock.recv_multipart(**kwargs)
 
     def send(self, data, **kwargs):
         if not self.can_send:
-            raise RPCException(_("You cannot send on this socket."))
+            raise RPCException(("You cannot send on this socket."))
         self.sock.send_multipart(data, **kwargs)
 
 
@@ -316,7 +315,7 @@ class InternalContext(object):
                     rpc_common.serialize_remote_exception(e._exc_info,
                                                           log_failure=False)}
         except Exception:
-            LOG.error(_("Exception during message handling"))
+            LOG.error(("Exception during message handling"))
             return {'exc':
                     rpc_common.serialize_remote_exception(sys.exc_info())}
 
@@ -396,7 +395,7 @@ class ZmqBaseReactor(ConsumerBase):
     def register(self, proxy, in_addr, zmq_type_in,
                  in_bind=True, subscribe=None):
 
-        LOG.info(_("Registering reactor"))
+        LOG.info(("Registering reactor"))
 
         if zmq_type_in not in (zmq.PULL, zmq.SUB):
             raise RPCException("Bad input socktype")
@@ -408,11 +407,11 @@ class ZmqBaseReactor(ConsumerBase):
         self.proxies[inq] = proxy
         self.sockets.append(inq)
 
-        LOG.info(_("In reactor registered"))
+        LOG.info(("In reactor registered"))
 
     def consume_in_thread(self):
         def _consume(sock):
-            LOG.info(_("Consuming socket"))
+            LOG.info(("Consuming socket"))
             while not sock.closed:
                 self.consume(sock)
 
@@ -464,13 +463,13 @@ class ZmqProxy(ZmqBaseReactor):
 
         if topic not in self.topic_proxy:
             def publisher(waiter):
-                LOG.info(_("Creating proxy for topic: %s"), topic)
+                LOG.info(("Creating proxy for topic: %s"), topic)
 
                 try:
                     # The topic is received over the network,
                     # don't trust this input.
                     if self.badchars.search(topic) is not None:
-                        emsg = _("Topic contained dangerous characters.")
+                        emsg = ("Topic contained dangerous characters.")
                         LOG.warn(emsg)
                         raise RPCException(emsg)
 
@@ -502,13 +501,13 @@ class ZmqProxy(ZmqBaseReactor):
             try:
                 wait_sock_creation.wait()
             except RPCException:
-                LOG.error(_("Topic socket file creation failed."))
+                LOG.error(("Topic socket file creation failed."))
                 return
 
         try:
             self.topic_proxy[topic].put_nowait(data)
         except eventlet.queue.Full:
-            LOG.error(_("Local per-topic backlog buffer full for topic "
+            LOG.error(("Local per-topic backlog buffer full for topic "
                         "%s. Dropping message."), topic)
 
     def consume_in_thread(self):
@@ -524,7 +523,7 @@ class ZmqProxy(ZmqBaseReactor):
         except os.error:
             if not os.path.isdir(ipc_dir):
                 with excutils.save_and_reraise_exception():
-                    LOG.error(_("Required IPC directory does not exist at"
+                    LOG.error(("Required IPC directory does not exist at"
                                 " %s"), ipc_dir)
         try:
             self.register(consumption_proxy,
@@ -533,10 +532,10 @@ class ZmqProxy(ZmqBaseReactor):
         except zmq.ZMQError:
             if os.access(ipc_dir, os.X_OK):
                 with excutils.save_and_reraise_exception():
-                    LOG.error(_("Permission denied to IPC directory at"
+                    LOG.error(("Permission denied to IPC directory at"
                                 " %s"), ipc_dir)
             with excutils.save_and_reraise_exception():
-                LOG.error(_("Could not create ZeroMQ receiver daemon. "
+                LOG.error(("Could not create ZeroMQ receiver daemon. "
                             "Socket may already be in use."))
 
         super(ZmqProxy, self).consume_in_thread()
@@ -589,7 +588,7 @@ class ZmqReactor(ZmqBaseReactor):
             # Unmarshal only after verifying the message.
             ctx = RpcContext.unmarshal(data[3])
         else:
-            LOG.error(_("ZMQ Envelope version unsupported or unknown."))
+            LOG.error(("ZMQ Envelope version unsupported or unknown."))
             return
 
         self.pool.spawn_n(self.process, proxy, ctx, request)
@@ -617,7 +616,7 @@ class Connection(rpc_common.Connection):
             topic = '.'.join((topic.split('.', 1)[0], CONF.rpc_zmq_host))
 
         if topic in self.topics:
-            LOG.info(_("Skipping topic registration. Already registered."))
+            LOG.info(("Skipping topic registration. Already registered."))
             return
 
         # Receive messages from (local) proxy
@@ -638,7 +637,7 @@ class Connection(rpc_common.Connection):
             try:
                 mm.unregister(topic, CONF.rpc_zmq_host)
             except Exception as err:
-                LOG.error(_LE('Unable to unregister topic %(topic)s'
+                LOG.error(('Unable to unregister topic %(topic)s'
                               ' from matchmaker: %(err)s') %
                           {'topic': topic, 'err': err})
 
@@ -731,14 +730,14 @@ def _call(addr, context, topic, msg, timeout=None,
                 raw_msg = rpc_common.deserialize_msg(rpc_envelope)
             else:
                 raise rpc_common.UnsupportedRpcEnvelopeVersion(
-                    _("Unsupported or unknown ZMQ envelope returned."))
+                    ("Unsupported or unknown ZMQ envelope returned."))
 
             responses = raw_msg['args']['response']
         # ZMQError trumps the Timeout error.
         except zmq.ZMQError:
             raise RPCException("ZMQ Socket Error")
         except (IndexError, KeyError):
-            raise RPCException(_("RPC Message Invalid."))
+            raise RPCException(("RPC Message Invalid."))
         finally:
             if 'msg_waiter' in vars():
                 msg_waiter.close()
@@ -770,7 +769,7 @@ def _multi_send(method, context, topic, msg, timeout=None,
 
     # Don't stack if we have no matchmaker results
     if not queues:
-        warn_log = _LW("No matchmaker results. Not sending.")
+        warn_log = ("No matchmaker results. Not sending.")
 
         if method.__name__ == '_cast':
             LOG.warn(warn_log)
@@ -809,7 +808,7 @@ def _get_matchmaker(*args, **kwargs):
         'oslo.messaging._drivers.matchmaker_ring.MatchMakerRing': 'ring',
         'oslo.messaging._drivers.matchmaker.MatchMakerLocalhost': 'local'}
     if mm_name in mm_mapping:
-        LOG.warn(_LW('rpc_zmq_matchmaker = %(old_val)s is deprecated. '
+        LOG.warn(('rpc_zmq_matchmaker = %(old_val)s is deprecated. '
                      'It is suggested to change the value to %(new_val)s.'),
                  {'old_val': mm_name, 'new_val': mm_mapping[mm_name]})
         mm_name = mm_mapping[mm_name]

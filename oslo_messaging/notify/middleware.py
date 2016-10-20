@@ -27,7 +27,6 @@ import six
 import webob.dec
 
 import oslo_messaging
-from oslo_messaging._i18n import _LE
 from oslo_messaging import notify
 from oslo_messaging.openstack.common import context
 
@@ -39,7 +38,7 @@ def log_and_ignore_error(fn):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            LOG.exception(_LE('An exception occurred processing '
+            LOG.exception(('An exception occurred processing '
                               'the API call: %s ') % e)
     return wrapped
 

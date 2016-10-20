@@ -45,7 +45,6 @@ database errors.
 
 import six
 
-from oslo_db._i18n import _
 
 
 class DBError(Exception):
@@ -130,7 +129,7 @@ class DBInvalidUnicodeParameter(Exception):
     without encoding directive.
     """
 
-    message = _("Invalid Parameter: "
+    message = ("Invalid Parameter: "
                 "Encoding directive wasn't provided.")
 
 
@@ -158,7 +157,7 @@ class DBConnectionError(DBError):
 class InvalidSortKey(Exception):
     """A sort key destined for database query usage is invalid."""
 
-    message = _("Sort key supplied was not valid.")
+    message = ("Sort key supplied was not valid.")
 
 
 class ColumnError(Exception):

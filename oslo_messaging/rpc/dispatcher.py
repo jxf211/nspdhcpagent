@@ -30,7 +30,6 @@ import sys
 
 import six
 
-from oslo_messaging._i18n import _
 from oslo_messaging import _utils as utils
 from oslo_messaging import localcontext
 from oslo_messaging import serializer as msg_serializer
@@ -153,7 +152,7 @@ class RPCDispatcher(object):
         except Exception as e:
             # sys.exc_info() is deleted by LOG.exception().
             exc_info = sys.exc_info()
-            LOG.error(_('Exception during message handling: %s'), e,
+            LOG.error(('Exception during message handling: %s'), e,
                       exc_info=exc_info)
             incoming.reply(failure=exc_info)
             # NOTE(dhellmann): Remove circular object reference

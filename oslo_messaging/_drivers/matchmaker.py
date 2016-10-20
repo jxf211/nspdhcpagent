@@ -22,7 +22,6 @@ import logging
 import eventlet
 from oslo_config import cfg
 
-from oslo_messaging._i18n import _
 
 matchmaker_opts = [
     cfg.IntOpt('matchmaker_heartbeat_freq',
@@ -41,7 +40,7 @@ contextmanager = contextlib.contextmanager
 
 class MatchMakerException(Exception):
     """Signified a match could not be found."""
-    message = _("Match not found by MatchMaker.")
+    message = ("Match not found by MatchMaker.")
 
 
 class Exchange(object):
@@ -75,7 +74,7 @@ class MatchMakerBase(object):
         # Array of tuples. Index [2] toggles negation, [3] is last-if-true
         self.bindings = []
 
-        self.no_heartbeat_msg = _('Matchmaker does not implement '
+        self.no_heartbeat_msg = ('Matchmaker does not implement '
                                   'registration or heartbeat.')
 
     def register(self, key, host):
@@ -211,7 +210,7 @@ class HeartbeatMatchMakerBase(MatchMakerBase):
         self.hosts.discard(host)
         self.backend_unregister(key, '.'.join((key, host)))
 
-        LOG.info(_("Matchmaker unregistered: %(key)s, %(host)s"),
+        LOG.info(("Matchmaker unregistered: %(key)s, %(host)s"),
                  {'key': key, 'host': host})
 
     def start_heartbeat(self):
@@ -223,7 +222,7 @@ class HeartbeatMatchMakerBase(MatchMakerBase):
         """
         if not self.hosts:
             raise MatchMakerException(
-                _("Register before starting heartbeat."))
+                ("Register before starting heartbeat."))
 
         def do_heartbeat():
             while True:

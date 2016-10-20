@@ -17,7 +17,6 @@ import re
 
 from sqlalchemy import exc as sqla_exc
 
-from oslo_db._i18n import _LE
 from oslo_db import exception
 from oslo_db.sqlalchemy import compat
 
@@ -289,7 +288,7 @@ def _raise_for_remaining_DBAPIError(error, match, engine_name, is_disconnect):
         raise exception.DBConnectionError(error)
     else:
         LOG.exception(
-            _LE('DBAPIError exception wrapped from %s') % error)
+            ('DBAPIError exception wrapped from %s') % error)
         raise exception.DBError(error)
 
 
@@ -300,7 +299,7 @@ def _raise_for_unicode_encode(error, match, engine_name, is_disconnect):
 
 @filters("*", Exception, r".*")
 def _raise_for_all_others(error, match, engine_name, is_disconnect):
-    LOG.exception(_LE('DB exception wrapped.'))
+    LOG.exception(('DB exception wrapped.'))
     raise exception.DBError(error)
 
 

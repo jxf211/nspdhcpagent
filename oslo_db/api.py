@@ -31,7 +31,6 @@ import time
 from oslo_utils import importutils
 import six
 
-from oslo_db._i18n import _LE
 from oslo_db import exception
 from oslo_db import options
 
@@ -131,7 +130,7 @@ class wrap_db_retry(object):
                     return f(*args, **kwargs)
                 except db_error as e:
                     if remaining == 0:
-                        LOG.exception(_LE('DB exceeded retry limit.'))
+                        LOG.exception(('DB exceeded retry limit.'))
                         if isinstance(e, exception.RetryRequest):
                             six.reraise(type(e.inner_exc),
                                         e.inner_exc,
@@ -139,7 +138,7 @@ class wrap_db_retry(object):
                         raise e
                     if remaining != -1:
                         remaining -= 1
-                        LOG.exception(_LE('DB error.'))
+                        LOG.exception(('DB error.'))
                     # NOTE(vsergeyev): We are using patched time module, so
                     #                  this effectively yields the execution
                     #                  context to another green thread.
