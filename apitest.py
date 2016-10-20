@@ -4,7 +4,7 @@ import sys
 from oslo_config import cfg
 from common import service
 import service as neutron_service
-import opts_cfg
+#import opts_cfg
 import re
 from common import config
 from common import config as common_config
@@ -27,8 +27,8 @@ def register_options():
 class controller(object):
     
     def  __init__(self):
-        self._dhcp_agent_notifier = dhcp_rpc_agent_api.DhcpAgentNotifyAPI() 
-    
+        #self._dhcp_agent_notifier = dhcp_rpc_agent_api.DhcpAgentNotifyAPI() 
+   	pass 
     def create(self, request=None, body=None, **kwargs):
         """Creates a new instance of the requested entity."""
 	print "#"*50
@@ -76,8 +76,8 @@ class controller(object):
 
 
 if __name__ == '__main__':
-    register_options()
-    common_config.init(sys.argv[1:])
-    config.setup_logging()
+    #register_options()
+    #common_config.init(sys.argv[1:])
+    #config.setup_logging()
     contr = controller()
     contr.create()
