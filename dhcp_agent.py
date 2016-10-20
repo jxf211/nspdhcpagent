@@ -19,30 +19,34 @@ import sys
 from oslo_config import cfg
 from common import service
 import service as neutron_service
-import opts_cfg
 import re
-from common import config
-DHCP_AGENT = 'dhcp_agent'
+from common import topics
+from common import config as common_config
+from nspagent.dhcpcommon import config
+from nspagent.dhcp.linux import interface
+from nspagent.dhcp import config as dhcp_config
+from nspagent.dhcp.metadata import config as metadata_config
 
 def register_options():
-    cfg.CONF.register_opts(opts_cfg.INTERFACE_DRIVER_OPTS)
-    cfg.CONF.register_opts(opts_cfg.USE_NAMESPACES_OPTS)
-    cfg.CONF.register_opts(opts_cfg.AGENT_STATE_OPTS, 'AGENT')
-    cfg.CONF.register_opts(opts_cfg.DHCP_AGENT_OPTS)
-    cfg.CONF.register_opts(opts_cfg.DHCP_OPTS)
-    cfg.CONF.register_opts(opts_cfg.DNSMASQ_OPTS)
-    cfg.CONF.register_opts(opts_cfg.DRIVER_OPTS)
-    cfg.CONF.register_opts(opts_cfg.SHARED_OPTS)
-    cfg.CONF.register_opts(opts_cfg.OPTS)
+    config.register_interface_driver_opts_helper(cfg.CONF)
+    config.register_use_namespaces_opts_helper(cfg.CONF)
+    config.register_agent_state_opts_helper(cfg.CONF)
+    cfg.CONF.register_opts(dhcp_config.DHCP_AGENT_OPTS)
+    cfg.CONF.register_opts(dhcp_config.DHCP_OPTS)
+    cfg.CONF.register_opts(dhcp_config.DNSMASQ_OPTS)
+    cfg.CONF.register_opts(metadata_config.DRIVER_OPTS)
+    cfg.CONF.register_opts(metadata_config.SHARED_OPTS)
+    cfg.CONF.register_opts(interface.OPTS)
+
 
 def main():
     register_options()
-    config.init(sys.argv[1:])
+    common_config.init(sys.argv[1:])
     config.setup_logging()
     server = neutron_service.Service.create(
         binary='neutron-dhcp-agent',
-        topic=DHCP_AGENT,
-        report_interval=0,
+        topic=topics.DHCP_AGENT,
+        report_interval=cfg.CONF.AGENT.report_interval,
 	#periodic_interval=0,
         manager='nspagent.dhcp.agent.DhcpAgentWithStateReport')
     service.launch(server).wait()
