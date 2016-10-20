@@ -130,6 +130,7 @@ class DhcpBase(object):
 
     def restart(self):
         """Restart the dhcp service for the network."""
+	LOG.debug("dnsmasq started $$$$$$$$$$$$$$$$$$")
         self.disable(retain_port=True)
         self.enable()
 
@@ -238,16 +239,16 @@ class DhcpLocalProcess(DhcpBase):
     def _get_value_from_conf_file(self, kind, converter=None):
         """A helper function to read a value from one of the state files."""
         file_name = self.get_conf_file_name(kind)
-        msg = _('Error while reading %s')
+        msg = ('Error while reading %s')
 
         try:
             with open(file_name, 'r') as f:
                 try:
                     return converter(f.read()) if converter else f.read()
                 except ValueError:
-                    msg = _('Unable to convert value in %s')
+                    msg = ('Unable to convert value in %s')
         except IOError:
-            msg = _('Unable to access %s')
+            msg = ('Unable to access %s')
 
         LOG.debug(msg, file_name)
         return None
@@ -944,7 +945,7 @@ class DeviceManager(object):
 
     def setup_dhcp_port(self, network):
         """Create/update DHCP port for the host if needed and return port."""
-
+	LOG.debug("setup_dhcp_port param network:%s", network)
         device_id = self.get_device_id(network)
         subnets = {}
         dhcp_enabled_subnet_ids = []
@@ -1045,9 +1046,9 @@ class DeviceManager(object):
 
 				       u'ipv6_ra_mode': None,
 
-				       u'allocation_pools': [{u'start': u'172.16.0.2', u'end': u'172.16.255.254'}],
+				       u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
 
-				       u'gateway_ip': u'172.16.0.1',
+				       u'gateway_ip': u'10.10.40.1',
 
 				       u'shared': False,
 
@@ -1055,7 +1056,7 @@ class DeviceManager(object):
 
 				       u'host_routes': [],
 
-				       u'cidr': u'172.16.0.0/16',
+				       u'cidr': u'10.10.40.0/24',
 
 				       u'ipv6_address_mode': None,
 
@@ -1065,7 +1066,7 @@ class DeviceManager(object):
 
 				      },
 
-			    'ip_address': u'172.16.0.2'
+			    'ip_address': u'10.10.40.2'
 
 			    }],
 
@@ -1111,7 +1112,7 @@ class DeviceManager(object):
         """Create and initialize a device for network's DHCP on this host."""
         port = self.setup_dhcp_port(network)
         interface_name = self.get_interface_name(network, port)
-
+	LOG.debug("port :%s", port)
         if ip_lib.ensure_device_is_ready(interface_name,
                                          namespace=network.namespace):
             LOG.debug('Reusing existing device: %s.', interface_name)
@@ -1125,6 +1126,7 @@ class DeviceManager(object):
             self.fill_dhcp_udp_checksums(namespace=network.namespace)
         ip_cidrs = []
         for fixed_ip in port.fixed_ips:
+	    LOG.debug("fixed_ip.subnet:%s", fixed_ip.subnet)
             subnet = fixed_ip.subnet
             if not ipv6_utils.is_auto_address_subnet(subnet):
                 net = netaddr.IPNetwork(subnet.cidr)

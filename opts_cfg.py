@@ -169,7 +169,7 @@ OPTS = [
                default='br-int',
                help=('Name of Open vSwitch bridge to use')),
     cfg.BoolOpt('ovs_use_veth',
-                default=False,
+                default=True,
                 help=('Uses veth for an interface or not')),
     cfg.IntOpt('network_device_mtu',
                help=('MTU setting for device.')),
