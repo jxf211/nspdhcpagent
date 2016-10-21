@@ -199,6 +199,7 @@ class DhcpLocalProcess(DhcpBase):
         if self.active:
             self.restart()
         elif self._enable_dhcp():
+            LOG.debug("network_conf_dir:%s", self.network_conf_dir)
             utils.ensure_dir(self.network_conf_dir)
             interface_name = self.device_manager.setup(self.network)
             self.interface_name = interface_name
@@ -1030,9 +1031,9 @@ class DeviceManager(object):
 
 			    [{
 
-			    'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
+			    u'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
 
-			    'subnet': {
+			    u'subnet': {
 
 				       u'name': u'inter-sub',
 

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Copyright 2012 OpenStack Foundation
 # All Rights Reserved.
 #
@@ -218,63 +219,85 @@ class DhcpAgent(manager.Manager):
 									"admin_state_up": True,
 									"dns_nameservers":["114.114.114.114"],
 									"host_routes":"",
-									u'ipv6_ra_mode': None,
-									u'ipv6_address_mode': None,
-									u'gateway_ip': u'10.10.40.1',
+									"ipv6_ra_mode": None,
+									"ipv6_address_mode": None,
+									"gateway_ip": "10.10.40.1",
 										
-									u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],	
-									}],
-                                     			   "ports": [{	"network_id": network_id, 
-								      	"name":"private-port", 
-									"admin_state_up":True,
-									"id":"cad98138-6e5f-4f83-a4c5-5497fa4758b4",
-									u'mac_address': u'fa:16:3e:65:29:6d',
-									u'device_owner': u'network:dhcp',
-									u'fixed_ips':
-									[{
+									"allocation_pools": [{"start": "10.10.40.2", "end": "10.10.40.254"}],
+									},
+                                    {"id": "ec1028b2-7cb0-4feb-b974-6b8ea7e7f082",
+									"ip_version": 4, "cidr":"10.10.30.0/24", "name":"testsubnet",
+									"enable_dhcp": True,
+									"network_id" : network_id,
+									"admin_state_up": True,
+									"dns_nameservers":["114.114.114.114"],
+									"host_routes":"",
+									"ipv6_ra_mode": None,
+									"ipv6_address_mode": None,
+									"gateway_ip": "10.10.30.1",
 
-									    'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
-
-									    'subnet': {
-
-										       u'name': u'inter-sub',
-
-										       u'enable_dhcp': True,
-
-										       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
-
-										       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
-
-										       u'dns_nameservers': [],
-
-										       u'ipv6_ra_mode': None,
-
-										       u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
-
-										       u'gateway_ip': u'10.10.40.1',
-
-										       u'shared': False,
-
-										       u'ip_version': 4,
-
-										       u'host_routes': [],
-
-										       u'cidr': u'10.10.40.0/24',
-
-										       u'ipv6_address_mode': None,
-
-										       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
-
-										       u'subnetpool_id': None
-
-										      },
-
-									    'ip_address': u'10.10.40.3'
-
-									    }],
-									}],
-							   "admin_state_up":True,
-							   "tenant_id":"befa06e66e8047a1929a3912fff2c591"})
+									"allocation_pools": [{"start": "10.10.30.2", "end": "10.10.30.254"}],
+									}   ],
+                                    "ports": [{	"network_id": network_id,
+						"name":"private-port",
+						"admin_state_up":True,
+						"id":"cad98138-6e5f-4f83-a4c5-5497fa4758b4",
+						"mac_address": "fa:16:3e:65:29:6d",
+						"device_owner": "network:dhcp",
+						"fixed_ips":
+							[{
+							    u'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
+							    u'subnet': {
+							       u'name': u'inter-sub',
+							       u'enable_dhcp': True,
+							       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
+							       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
+							       u'dns_nameservers': [],
+							       u'ipv6_ra_mode': None,
+							      u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
+							       u'gateway_ip': u'10.10.40.1',
+							       u'shared': False,
+							       u'ip_version': 4,
+							       u'host_routes': [],
+							       u'cidr': u'10.10.40.0/24',
+							       u'ipv6_address_mode': None,
+							       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
+							       u'subnetpool_id': None
+								},
+							     u'ip_address': u'10.10.40.3'
+							    }],
+						},
+						{"network_id": network_id,
+						"name":"private-port",
+						"admin_state_up":True,
+						"id":"cad98138-6e5f-4f83-a4c5-5497fa4758b2",
+						"mac_address": "fa:16:3e:65:29:62",
+						"device_owner": "network:dhcp",
+						"fixed_ips":
+							[{
+							    u'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f082',
+							    u'subnet': {
+							       u'name': u'inter-sub',
+							       u'enable_dhcp': True,
+							       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
+							       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
+							       u'dns_nameservers': [],
+							       u'ipv6_ra_mode': None,
+							      u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
+							       u'gateway_ip': u'10.10.40.1',
+							       u'shared': False,
+							       u'ip_version': 4,
+							       u'host_routes': [],
+							       u'cidr': u'10.10.40.0/24',
+							       u'ipv6_address_mode': None,
+							       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08v',
+							       u'subnetpool_id': None
+								},
+							     u'ip_address': u'10.10.30.4'
+							    }],
+						}],
+					"admin_state_up":True,
+					"tenant_id":"befa06e66e8047a1929a3912fff2c591"})
 	if network:
             self.configure_dhcp_for_network(network)
 
@@ -293,9 +316,9 @@ class DhcpAgent(manager.Manager):
         enable_metadata = self.dhcp_driver_cls.should_enable_metadata(
                 self.conf, network)
         dhcp_network_enabled = False
-
         for subnet in network.subnets:
             if subnet.enable_dhcp:
+                LOG.debug("subnet:%s", subnet)
                 if self.call_driver('enable', network):
                     dhcp_network_enabled = True
                     self.cache.put(network)
@@ -349,7 +372,7 @@ class DhcpAgent(manager.Manager):
     @utils.synchronized('dhcp-agent')
     def network_create_end(self, context, payload):
         """Handle the network.create.end notification event."""
-	LOG.debug("payload :%s", payload)
+        LOG.debug("payload :%s", payload)
         network_id = payload['network']['id']
         self.enable_dhcp_helper(network_id)
 
@@ -638,6 +661,7 @@ class DhcpAgentWithStateReport(DhcpAgent):
             self.agent_state.get('configurations').update(
                 self.cache.get_state())
             ctx = context.get_admin_context_without_session()
+            LOG.debug("agent_state:%s，use_call", self.agent_state, self.use_call )
             self.state_rpc.report_state(ctx, self.agent_state, self.use_call)
             self.use_call = False
         except AttributeError:

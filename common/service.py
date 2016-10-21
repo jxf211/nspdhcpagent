@@ -102,6 +102,7 @@ class Launcher(object):
         :returns: None
 
         """
+        LOG.debug("class Launcher(object):")
         self.services = Services()
         self.backdoor_port = eventlet_backdoor.initialize_if_enabled()
 
@@ -112,6 +113,7 @@ class Launcher(object):
         :returns: None
 
         """
+        LOG.debug("launch_service")
         service.backdoor_port = self.backdoor_port
         self.services.add(service)
 
@@ -129,7 +131,9 @@ class Launcher(object):
         :returns: None
 
         """
+        LOG.debug("Launcher_wait_start")
         self.services.wait()
+        LOG.debug("Launcher_wait_end")
 
     def restart(self):
         """Reload config files and restart service.
@@ -137,6 +141,7 @@ class Launcher(object):
         :returns: None
 
         """
+        LOG.debug("Launcher.__restart__")
         cfg.CONF.reload_config_files()
         self.services.restart()
 
@@ -180,6 +185,7 @@ class ServiceLauncher(Launcher):
         return status, signo
 
     def wait(self, ready_callback=None):
+        LOG.debug("ServiceLauncher wait. ready_callback:%s", ready_callback)
         systemd.notify_once()
         while True:
             self.handle_signal()
@@ -469,6 +475,7 @@ class Services(object):
         self.tg.stop()
 
     def wait(self):
+        LOG.debug("Services wait")
         self.tg.wait()
 
     def restart(self):
@@ -487,15 +494,18 @@ class Services(object):
         :returns: None
 
         """
+        LOG.debug("run_service")
         service.start()
         done.wait()
 
 
 def launch(service, workers=1):
     if workers is None or workers == 1:
+        LOG.debug(" launch(service, workers=1):")
         launcher = ServiceLauncher()
         launcher.launch_service(service)
     else:
+        LOG.debug(" launch(service, workers=1):")
         launcher = ProcessLauncher()
         launcher.launch_service(service, workers=workers)
 

@@ -212,7 +212,6 @@ def get_conf_file_name(cfg_root, uuid, cfg_file, ensure_conf_dir=False):
 def get_value_from_file(filename, converter=None):
 
     try:
-	LOG.debug("filename:%s", filename)
         with open(filename, 'r') as f:
             try:
                 return converter(f.read()) if converter else f.read()

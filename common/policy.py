@@ -307,7 +307,6 @@ class Enforcer(object):
         :raises: ConfigFilesNotFoundError if the file/path couldn't
                  be located.
         """
-	LOG.debug("path:%s", path)
         policy_path = CONF.find_file(path)
 
         if policy_path:
