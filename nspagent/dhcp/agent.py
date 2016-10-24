@@ -154,7 +154,9 @@ class DhcpAgent(manager.Manager):
         known_network_ids = set(self.cache.get_network_ids())
 
         try:
+            LOG.debug("start syn_state")
             active_networks = self.plugin_rpc.get_active_networks_info()
+            LOG.debug("getted syn_state")
             active_network_ids = set(network.id for network in active_networks)
             for deleted_id in known_network_ids - active_network_ids:
                 try:
@@ -661,7 +663,7 @@ class DhcpAgentWithStateReport(DhcpAgent):
             self.agent_state.get('configurations').update(
                 self.cache.get_state())
             ctx = context.get_admin_context_without_session()
-            LOG.debug("agent_state:%s，use_call", self.agent_state, self.use_call )
+            LOG.debug("agent_state:%s，use_call:%s", self.agent_state, self.use_call)
             self.state_rpc.report_state(ctx, self.agent_state, self.use_call)
             self.use_call = False
         except AttributeError:

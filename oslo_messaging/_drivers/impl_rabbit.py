@@ -28,7 +28,6 @@ import kombu.connection
 import kombu.entity
 import kombu.messaging
 from oslo_config import cfg
-from oslo_utils import netutils
 import six
 from six.moves.urllib import parse
 
@@ -281,6 +280,7 @@ class DirectConsumer(ConsumerBase):
                    'auto_delete': True,
                    'exclusive': False}
         options.update(kwargs)
+        LOG.debug("DirectConsumer exhcange_name:%s, routing_key:%s", msg_id, msg_id)
         exchange = kombu.entity.Exchange(name=msg_id,
                                          type='direct',
                                          durable=options['durable'],
@@ -318,6 +318,7 @@ class TopicConsumer(ConsumerBase):
                    'auto_delete': conf.amqp_auto_delete,
                    'exclusive': False}
         options.update(kwargs)
+        LOG.debug("TopicConsumer exchange_name:%s, routing_key:%s", exchange_name, topic)
         exchange = kombu.entity.Exchange(name=exchange_name,
                                          type='topic',
                                          durable=options['durable'],
@@ -354,6 +355,7 @@ class FanoutConsumer(ConsumerBase):
                    'auto_delete': True,
                    'exclusive': False}
         options.update(kwargs)
+        LOG.debug("FanoutConsumer exchange_name:%s, routing_key:%s ", exchange_name, topic)
         exchange = kombu.entity.Exchange(name=exchange_name, type='fanout',
                                          durable=options['durable'],
                                          auto_delete=options['auto_delete'])
@@ -589,6 +591,52 @@ class ConnectionLock(DummyConnectionLock):
         else:
             return lambda: threading.current_thread()
 
+def parse_host_port(address, default_port=None):
+    """Interpret a string as a host:port pair.
+
+    An IPv6 address MUST be escaped if accompanied by a port,
+    because otherwise ambiguity ensues: 2001:db8:85a3::8a2e:370:7334
+    means both [2001:db8:85a3::8a2e:370:7334] and
+    [2001:db8:85a3::8a2e:370]:7334.
+
+    >>> parse_host_port('server01:80')
+    ('server01', 80)
+    >>> parse_host_port('server01')
+    ('server01', None)
+    >>> parse_host_port('server01', default_port=1234)
+    ('server01', 1234)
+    >>> parse_host_port('[::1]:80')
+    ('::1', 80)
+    >>> parse_host_port('[::1]')
+    ('::1', None)
+    >>> parse_host_port('[::1]', default_port=1234)
+    ('::1', 1234)
+    >>> parse_host_port('2001:db8:85a3::8a2e:370:7334', default_port=1234)
+    ('2001:db8:85a3::8a2e:370:7334', 1234)
+    >>> parse_host_port(None)
+    (None, None)
+    """
+    if not address:
+        return (None, None)
+
+    if address[0] == '[':
+        # Escaped ipv6
+        _host, _port = address[1:].split(']')
+        host = _host
+        if ':' in _port:
+            port = _port.split(':')[1]
+        else:
+            port = default_port
+    else:
+        if address.count(':') == 1:
+            host, port = address.split(':')
+        else:
+            # 0 means ipv4, >1 means ipv6.
+            # We prohibit unescaped ipv6 addresses with port.
+            host = address
+            port = default_port
+
+    return (host, None if port is None else int(port))
 
 class Connection(object):
     """Connection object."""
@@ -645,7 +693,7 @@ class Connection(object):
             self._url = "%s://%s" % (transport, virtual_host)
         else:
             for adr in self.driver_conf.rabbit_hosts:
-                hostname, port = netutils.parse_host_port(
+                hostname, port = parse_host_port(
                     adr, default_port=self.driver_conf.rabbit_port)
                 self._url += '%samqp://%s:%s@%s:%s/%s' % (
                     ";" if self._url else '',

@@ -177,15 +177,13 @@ def get_transport(conf, url=None, allowed_remote_exmods=None, aliases=None):
         url = parsed
     kwargs = dict(default_exchange=conf.control_exchange,
                   allowed_remote_exmods=allowed_remote_exmods)
-    #default_exchange=conf.control_exchange
-    #allowed_remote_exmods=allowed_remote_exmods
     try:
+        #
         mgr = driver.DriverManager('oslo.messaging.drivers',
                                    url.transport.split('+')[0],
                                    invoke_on_load=True,
                                    invoke_args=[conf, url],
                                    invoke_kwds=kwargs)
-	#mgr = RabbitDriver(conf, url, default_exchange, allowed_remote_exmods)
 
     except RuntimeError as ex:
         raise DriverLoadFailure(url.transport, ex)

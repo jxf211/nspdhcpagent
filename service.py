@@ -166,7 +166,7 @@ class Service(n_rpc.Service):
 
     def start(self):
         LOG.debug("Service start")
-        self.manager.init_host()
+        self.manager.init_host()#sync_state
         super(Service, self).start()
         LOG.debug("report_interval:%s, periodic_interval:%s", self.report_interval, self.periodic_interval)
         if self.report_interval:

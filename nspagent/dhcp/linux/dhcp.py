@@ -1067,7 +1067,7 @@ class DeviceManager(object):
 
 				      },
 
-			    'ip_address': u'10.10.40.2'
+			    u'ip_address': u'10.10.40.2'
 
 			    }],
 

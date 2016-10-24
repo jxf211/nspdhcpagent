@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Copyright 2010 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # Copyright 2011 Justin Santa Barbara
@@ -115,6 +116,7 @@ class Launcher(object):
         """
         LOG.debug("launch_service")
         service.backdoor_port = self.backdoor_port
+        #将传进来的service对象加载到Services对象中(self.services = Services())
         self.services.add(service)
 
     def stop(self):
@@ -453,11 +455,14 @@ class Services(object):
 
     def __init__(self):
         self.services = []
+        #创建ThreadGroup对象，其中该对象有绿色线程池属性(即如下的self.pool)
         self.tg = threadgroup.ThreadGroup()
         self.done = event.Event()
 
     def add(self, service):
         self.services.append(service)
+        #将service运行时要执行的方法(self.run_service)加载到绿色线程中，其中
+        #当执行run_service方法时，service和self.done作为run_service的参数
         self.tg.add_thread(self.run_service, service, self.done)
 
     def stop(self):

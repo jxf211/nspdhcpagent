@@ -353,14 +353,17 @@ class AMQPDriverBase(base.BaseDriver):
     def listen(self, target):
         conn = self._get_connection(rpc_amqp.PURPOSE_LISTEN)
         listener = AMQPListener(self, conn)
-
+        LOG.debug("1 exchange_name:%s, topic:%s", self._get_exchange(target), target.topic)
         conn.declare_topic_consumer(exchange_name=self._get_exchange(target),
                                     topic=target.topic,
                                     callback=listener)
+        LOG.debug("2 exchange_name:%s,  topic='%s.%s'", self._get_exchange(target), target.topic,
+                                                     target.server)
         conn.declare_topic_consumer(exchange_name=self._get_exchange(target),
                                     topic='%s.%s' % (target.topic,
                                                      target.server),
                                     callback=listener)
+        LOG.debug("3 topic:%s", target.topic)
         conn.declare_fanout_consumer(target.topic, listener)
 
         return listener

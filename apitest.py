@@ -47,7 +47,7 @@ class controller(object):
                                                        
     def _send_dhcp_notification(self, context, data, methodname):
         #self._dhcp_agent_notifier.notify(context, data, methodname)
-        task_exchange = Exchange('neutron', type='topic')   
+        task_exchange = Exchange('nspagent', type='topic')   
 	create_result = {"oslo.message" :{ 
 			  'message_id': '5c329c20-d435-444c-8fa2-e1b54592219c',
 			  'publisher_id': 'compute.host1',
