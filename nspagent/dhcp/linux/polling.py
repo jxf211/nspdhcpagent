@@ -16,15 +16,16 @@ import contextlib
 
 import eventlet
 
-from neutron.agent.common import base_polling
-from neutron.agent.linux import ovsdb_monitor
-from neutron.plugins.openvswitch.common import constants
-
+from nspagent.dhcpcommon import base_polling
+from nspagent.dhcp.linux import ovsdb_monitor
+#from neutron.plugins.openvswitch.common import constants
+# The default respawn interval for the ovsdb monitor
+DEFAULT_OVSDBMON_RESPAWN = 30
 
 @contextlib.contextmanager
 def get_polling_manager(minimize_polling=False,
                         ovsdb_monitor_respawn_interval=(
-                            constants.DEFAULT_OVSDBMON_RESPAWN)):
+                            DEFAULT_OVSDBMON_RESPAWN)):
     if minimize_polling:
         pm = InterfacePollingMinimizer(
             ovsdb_monitor_respawn_interval=ovsdb_monitor_respawn_interval)
@@ -43,7 +44,7 @@ class InterfacePollingMinimizer(base_polling.BasePollingManager):
 
     def __init__(
             self,
-            ovsdb_monitor_respawn_interval=constants.DEFAULT_OVSDBMON_RESPAWN):
+            ovsdb_monitor_respawn_interval=DEFAULT_OVSDBMON_RESPAWN):
 
         super(InterfacePollingMinimizer, self).__init__()
         self._monitor = ovsdb_monitor.SimpleInterfaceMonitor(

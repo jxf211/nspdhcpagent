@@ -13,8 +13,8 @@
 
 import netaddr
 
-from neutron.agent.linux import utils as linux_utils
-from neutron.common import utils
+from nspagent.dhcp.linux import utils as linux_utils
+from common import utils
 
 IPSET_ADD_BULK_THRESHOLD = 5
 SWAP_SUFFIX = '-new'

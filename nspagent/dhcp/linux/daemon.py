@@ -24,8 +24,7 @@ import sys
 
 from oslo_log import log as logging
 
-from neutron.common import exceptions
-from neutron.i18n import _LE, _LI
+from common import exceptions
 
 LOG = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ def setuid(user_id_or_name):
         try:
             os.setuid(new_uid)
         except OSError:
-            msg = _('Failed to set uid %s') % new_uid
+            msg = ('Failed to set uid %s') % new_uid
             LOG.critical(msg)
             raise exceptions.FailToDropPrivilegesExit(msg)
 
@@ -53,7 +52,7 @@ def setgid(group_id_or_name):
         try:
             os.setgid(new_gid)
         except OSError:
-            msg = _('Failed to set gid %s') % new_gid
+            msg = ('Failed to set gid %s') % new_gid
             LOG.critical(msg)
             raise exceptions.FailToDropPrivilegesExit(msg)
 
@@ -84,7 +83,7 @@ def drop_privileges(user=None, group=None):
         return
 
     if os.geteuid() != 0:
-        msg = _('Root permissions are required to drop privileges.')
+        msg = ('Root permissions are required to drop privileges.')
         LOG.critical(msg)
         raise exceptions.FailToDropPrivilegesExit(msg)
 
@@ -92,7 +91,7 @@ def drop_privileges(user=None, group=None):
         try:
             os.setgroups([])
         except OSError:
-            msg = _('Failed to remove supplemental groups')
+            msg = ('Failed to remove supplemental groups')
             LOG.critical(msg)
             raise exceptions.FailToDropPrivilegesExit(msg)
         setgid(group)
@@ -100,7 +99,7 @@ def drop_privileges(user=None, group=None):
     if user is not None:
         setuid(user)
 
-    LOG.info(_LI("Process runs with uid/gid: %(uid)s/%(gid)s"),
+    LOG.info(("Process runs with uid/gid: %(uid)s/%(gid)s"),
              {'uid': os.getuid(), 'gid': os.getgid()})
 
 
@@ -113,7 +112,7 @@ class Pidfile(object):
             self.fd = os.open(pidfile, os.O_CREAT | os.O_RDWR)
             fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except IOError:
-            LOG.exception(_LE("Error while handling pidfile: %s"), pidfile)
+            LOG.exception(("Error while handling pidfile: %s"), pidfile)
             sys.exit(1)
 
     def __str__(self):
@@ -121,7 +120,7 @@ class Pidfile(object):
 
     def unlock(self):
         if not not fcntl.flock(self.fd, fcntl.LOCK_UN):
-            raise IOError(_('Unable to unlock pid file'))
+            raise IOError(('Unable to unlock pid file'))
 
     def write(self, pid):
         os.ftruncate(self.fd, 0)
@@ -174,7 +173,7 @@ class Daemon(object):
             if pid > 0:
                 sys.exit(0)
         except OSError:
-            LOG.exception(_LE('Fork failed'))
+            LOG.exception(('Fork failed'))
             sys.exit(1)
 
     def daemonize(self):
@@ -216,7 +215,7 @@ class Daemon(object):
 
         if self.pidfile.is_running():
             self.pidfile.unlock()
-            LOG.error(_LE('Pidfile %s already exist. Daemon already '
+            LOG.error(('Pidfile %s already exist. Daemon already '
                           'running?'), self.pidfile)
             sys.exit(1)
 

@@ -19,9 +19,9 @@ from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
-from neutron.agent.linux import external_process
-from neutron.agent.linux import utils
-from neutron.common import constants
+from nspagent.dhcp.linux import external_process
+from nspagent.dhcp.linux import utils
+from common import constants
 
 
 RADVD_SERVICE_NAME = 'radvd'

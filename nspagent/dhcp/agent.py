@@ -209,98 +209,15 @@ class DhcpAgent(manager.Manager):
             self.schedule_resync(e, network_id)
             LOG.exception(('Network %s info call failed.'), network_id)
 
-    def enable_dhcp_helper(self, network_id):
+    def enable_dhcp_helper(self, network_id, network_rs=None):
         """Enable DHCP for a network that meets enabling criteria."""
         #network = self.safe_get_network_info(network_id)
-
-        network = dhcp.NetModel(self.conf.use_namespaces, {"id": network_id,
-                                     			   "subnets": [{"id": "ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f",
-									"ip_version": 4, "cidr":"10.10.40.0/24", "name":"testsubnet", 
-									"enable_dhcp": True,
-									"network_id" : network_id,
-									"admin_state_up": True,
-									"dns_nameservers":["114.114.114.114"],
-									"host_routes":"",
-									"ipv6_ra_mode": None,
-									"ipv6_address_mode": None,
-									"gateway_ip": "10.10.40.1",
-										
-									"allocation_pools": [{"start": "10.10.40.2", "end": "10.10.40.254"}],
-									},
-                                    {"id": "ec1028b2-7cb0-4feb-b974-6b8ea7e7f082",
-									"ip_version": 4, "cidr":"10.10.30.0/24", "name":"testsubnet",
-									"enable_dhcp": True,
-									"network_id" : network_id,
-									"admin_state_up": True,
-									"dns_nameservers":["114.114.114.114"],
-									"host_routes":"",
-									"ipv6_ra_mode": None,
-									"ipv6_address_mode": None,
-									"gateway_ip": "10.10.30.1",
-
-									"allocation_pools": [{"start": "10.10.30.2", "end": "10.10.30.254"}],
-									}   ],
-                                    "ports": [{	"network_id": network_id,
-						"name":"private-port",
-						"admin_state_up":True,
-						"id":"cad98138-6e5f-4f83-a4c5-5497fa4758b4",
-						"mac_address": "fa:16:3e:65:29:6d",
-						"device_owner": "network:dhcp",
-						"fixed_ips":
-							[{
-							    u'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
-							    u'subnet': {
-							       u'name': u'inter-sub',
-							       u'enable_dhcp': True,
-							       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
-							       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
-							       u'dns_nameservers': [],
-							       u'ipv6_ra_mode': None,
-							      u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
-							       u'gateway_ip': u'10.10.40.1',
-							       u'shared': False,
-							       u'ip_version': 4,
-							       u'host_routes': [],
-							       u'cidr': u'10.10.40.0/24',
-							       u'ipv6_address_mode': None,
-							       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08f',
-							       u'subnetpool_id': None
-								},
-							     u'ip_address': u'10.10.40.3'
-							    }],
-						},
-						{"network_id": network_id,
-						"name":"private-port",
-						"admin_state_up":True,
-						"id":"cad98138-6e5f-4f83-a4c5-5497fa4758b2",
-						"mac_address": "fa:16:3e:65:29:62",
-						"device_owner": "network:dhcp",
-						"fixed_ips":
-							[{
-							    u'subnet_id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f082',
-							    u'subnet': {
-							       u'name': u'inter-sub',
-							       u'enable_dhcp': True,
-							       u'network_id': u'8165bc3d-400a-48a0-9186-bf59f7f94b05',
-							       u'tenant_id': u'befa06e66e8047a1929a3912fff2c591',
-							       u'dns_nameservers': [],
-							       u'ipv6_ra_mode': None,
-							      u'allocation_pools': [{u'start': u'10.10.40.2', u'end': u'10.10.40.254'}],
-							       u'gateway_ip': u'10.10.40.1',
-							       u'shared': False,
-							       u'ip_version': 4,
-							       u'host_routes': [],
-							       u'cidr': u'10.10.40.0/24',
-							       u'ipv6_address_mode': None,
-							       u'id': u'ec1028b2-7cb0-4feb-b974-6b8ea7e7f08v',
-							       u'subnetpool_id': None
-								},
-							     u'ip_address': u'10.10.30.4'
-							    }],
-						}],
-					"admin_state_up":True,
-					"tenant_id":"befa06e66e8047a1929a3912fff2c591"})
-	if network:
+        if network_rs:
+            network = dhcp.NetModel(self.conf.use_namespaces, network_rs)
+        else:
+            LOG.err("payload no network_id")
+            network = self.safe_get_network_info(network_id)
+        if network:
             self.configure_dhcp_for_network(network)
 
     @utils.exception_logger()
@@ -376,7 +293,8 @@ class DhcpAgent(manager.Manager):
         """Handle the network.create.end notification event."""
         LOG.debug("payload :%s", payload)
         network_id = payload['network']['id']
-        self.enable_dhcp_helper(network_id)
+        network = payload['network']
+        self.enable_dhcp_helper(network_id, network)
 
     @utils.synchronized('dhcp-agent')
     def network_update_end(self, context, payload):

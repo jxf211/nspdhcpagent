@@ -207,7 +207,7 @@ class IptablesTable(object):
         """
         chain = get_chain_name(chain, wrap)
         if wrap and chain not in self.chains:
-            raise LookupError(_('Unknown chain: %r') % chain)
+            raise LookupError(('Unknown chain: %r') % chain)
 
         if '$' in rule:
             rule = ' '.join(

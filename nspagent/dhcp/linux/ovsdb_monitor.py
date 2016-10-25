@@ -15,9 +15,7 @@
 import eventlet
 from oslo_log import log as logging
 
-from neutron.agent.linux import async_process
-from neutron.i18n import _LE
-
+from nspagent.dhcp.linux import async_process
 
 LOG = logging.getLogger(__name__)
 
@@ -47,7 +45,7 @@ class OvsdbMonitor(async_process.AsyncProcess):
     def _read_stderr(self):
         data = super(OvsdbMonitor, self)._read_stderr()
         if data:
-            LOG.error(_LE('Error received from ovsdb monitor: %s'), data)
+            LOG.error(('Error received from ovsdb monitor: %s'), data)
             # Do not return value to ensure that stderr output will
             # stop the monitor.
 

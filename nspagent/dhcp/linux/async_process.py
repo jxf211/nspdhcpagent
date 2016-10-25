@@ -17,9 +17,8 @@ import eventlet.event
 import eventlet.queue
 from oslo_log import log as logging
 
-from neutron.agent.linux import ip_lib
-from neutron.agent.linux import utils
-from neutron.i18n import _LE
+from nspagent.dhcp.linux import ip_lib
+from nspagent.dhcp.linux import utils
 
 
 LOG = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class AsyncProcess(object):
         self.cmd = ip_lib.add_namespace_to_cmd(cmd, namespace)
         self.run_as_root = run_as_root
         if respawn_interval is not None and respawn_interval < 0:
-            raise ValueError(_('respawn_interval must be >= 0 if provided.'))
+            raise ValueError(('respawn_interval must be >= 0 if provided.'))
         self.respawn_interval = respawn_interval
         self._process = None
         self._kill_event = None
@@ -95,7 +94,7 @@ class AsyncProcess(object):
                 did not start in time.
         """
         if self._kill_event:
-            raise AsyncProcessException(_('Process is already started'))
+            raise AsyncProcessException(('Process is already started'))
         else:
             LOG.debug('Launching async process [%s].', self.cmd)
             self._spawn()
@@ -114,7 +113,7 @@ class AsyncProcess(object):
             LOG.debug('Halting async process [%s].', self.cmd)
             self._kill()
         else:
-            raise AsyncProcessException(_('Process is not running.'))
+            raise AsyncProcessException(('Process is not running.'))
 
         if block:
             utils.wait_until_true(lambda: not self.is_active())
@@ -169,7 +168,7 @@ class AsyncProcess(object):
             stale_pid = (isinstance(ex, RuntimeError) and
                          'No such process' in str(ex))
             if not stale_pid:
-                LOG.exception(_LE('An error occurred while killing [%s].'),
+                LOG.exception(('An error occurred while killing [%s].'),
                               self.cmd)
                 return False
 
@@ -195,7 +194,7 @@ class AsyncProcess(object):
                 if not output and output != "":
                     break
             except Exception:
-                LOG.exception(_LE('An error occurred while communicating '
+                LOG.exception(('An error occurred while communicating '
                                   'with async process [%s].'), self.cmd)
                 break
             # Ensure that watching a process with lots of output does

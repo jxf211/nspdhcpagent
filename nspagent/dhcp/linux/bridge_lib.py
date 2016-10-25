@@ -18,8 +18,8 @@
 
 import os
 
-from neutron.agent.linux import ip_lib
-from neutron.agent.linux import utils
+from nspagent.dhcp.linux import ip_lib
+from nspagent.dhcp.linux import utils
 
 # NOTE(toabctl): Don't use /sys/devices/virtual/net here because not all tap
 # devices are listed here (i.e. when using Xen)

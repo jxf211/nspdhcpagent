@@ -20,10 +20,9 @@ import netaddr
 from oslo_config import cfg
 from oslo_log import log as logging
 
-from neutron.i18n import _, _LE
-from neutron.agent.linux import external_process
-from neutron.agent.linux import utils
-from neutron.common import exceptions
+from nspagent.dhcp.linux import external_process
+from nspagent.dhcp.linux import utils
+from common import exceptions
 
 VALID_STATES = ['MASTER', 'BACKUP']
 VALID_AUTH_TYPES = ['AH', 'PASS']
@@ -50,7 +49,7 @@ def get_free_range(parent_range, excluded_ranges, size=PRIMARY_VIP_RANGE_SIZE):
         if cidr.prefixlen <= size:
             return '%s/%s' % (cidr.network, size)
 
-    raise ValueError(_('Network of size %(size)s, from IP range '
+    raise ValueError(('Network of size %(size)s, from IP range '
                        '%(parent_range)s excluding IP ranges '
                        '%(excluded_ranges)s was not found.') %
                      {'size': size,
@@ -59,7 +58,7 @@ def get_free_range(parent_range, excluded_ranges, size=PRIMARY_VIP_RANGE_SIZE):
 
 
 class InvalidInstanceStateException(exceptions.NeutronException):
-    message = _('Invalid instance state: %(state)s, valid states are: '
+    message = ('Invalid instance state: %(state)s, valid states are: '
                 '%(valid_states)s')
 
     def __init__(self, **kwargs):
@@ -69,7 +68,7 @@ class InvalidInstanceStateException(exceptions.NeutronException):
 
 
 class InvalidAuthenticationTypeException(exceptions.NeutronException):
-    message = _('Invalid authentication type: %(auth_type)s, '
+    message = ('Invalid authentication type: %(auth_type)s, '
                 'valid types are: %(valid_auth_types)s')
 
     def __init__(self, **kwargs):
@@ -327,7 +326,7 @@ class KeepalivedManager(object):
             os.remove(pid_file)
         except OSError as e:
             if e.errno != errno.ENOENT:
-                LOG.error(_LE("Could not delete file %s, keepalived can "
+                LOG.error(("Could not delete file %s, keepalived can "
                               "refuse to start."), pid_file)
 
     def get_vrrp_pid_file_name(self, base_pid_file):

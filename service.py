@@ -54,7 +54,7 @@ CONF.register_opts(service_opts)
 
 LOG = logging.getLogger(__name__)
 
-
+'''
 class WsgiService(object):
     """Base class for WSGI based services.
 
@@ -85,7 +85,7 @@ def serve_wsgi(cls):
                               'for details.'))
 
     return service
-
+'''
 
 class RpcWorker(object):
     """Wraps a worker to be handled by ProcessLauncher"""

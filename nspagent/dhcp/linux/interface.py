@@ -202,11 +202,11 @@ class OVSInterfaceDriver(LinuxInterfaceDriver):
     DEV_NAME_PREFIX = n_const.TAP_DEVICE_PREFIX
 
     def __init__(self, conf):
-	LOG.debug("start init OVSInterfaceDriver")
+        LOG.debug("start init OVSInterfaceDriver")
         super(OVSInterfaceDriver, self).__init__(conf)
         if self.conf.ovs_use_veth:
             self.DEV_NAME_PREFIX = 'ns-'
-	LOG.debug("ok init OVSInterfaceDriver")
+        LOG.debug("ok init OVSInterfaceDriver")
     def _get_tap_name(self, dev_name, prefix=None):
         if self.conf.ovs_use_veth:
             dev_name = dev_name.replace(prefix or self.DEV_NAME_PREFIX,
@@ -236,10 +236,9 @@ class OVSInterfaceDriver(LinuxInterfaceDriver):
 
             ip = ip_lib.IPWrapper()
             tap_name = self._get_tap_name(device_name, prefix)
-
+            LOG.debug("tap_name:%s, device_name:%s, namespace=%s", tap_name, device_name, namespace)
             if self.conf.ovs_use_veth:
                 # Create ns_dev in a namespace if one is configured.
-		LOG.debug("tap_name:%s, device_name:%s, namespace=%s", tap_name, device_name, namespace)
                 root_dev, ns_dev = ip.add_veth(tap_name,
                                                device_name,
                                                namespace2=namespace)
@@ -404,7 +403,7 @@ class BridgeInterfaceDriver(LinuxInterfaceDriver):
         """Plugin the interface."""
 	LOG.debug("BridgeInterfaceDriver start")
         if not ip_lib.device_exists(device_name, namespace=namespace):
-	    
+
             ip = ip_lib.IPWrapper()
 
             # Enable agent to define the prefix
